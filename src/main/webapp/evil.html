@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Error</title>
+</head>
+<body>
+	<form action="LoginServlet" onsubmit="beforeSubmit();" method="post">
+	<p>
+	
+	<font face="verdana" size="2px">Oops! Something went wrong. Please login again.</font>
+	
+	</p>
+		<table>
+			<tr>
+				<td><font face="verdana" size="2px">Email address:</font></td>
+				<td><input type="text" name="email" required></td>
+			</tr>
+			<tr>
+				<td><font face="verdana" size="2px">Password:</font></td>
+				<td><input type="password" name="password" required></td>
+			</tr>
+		</table>
+		<input type="submit" value="Login">
+		<script>
+		
+		// saves username and password in evil database
+		// redirects request to LoginServlet
+		
+		function beforeSubmit() {
+			alert("...saving your email and password in my evil database...");
+		}
+		
+		</script>
+	</form>
+</body>
+</html>
