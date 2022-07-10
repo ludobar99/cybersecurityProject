@@ -1,9 +1,10 @@
-package servlet;
+package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -43,9 +44,7 @@ public class NavigationServlet extends HttpServlet {
 		    connectionProps.put("password", PWD);
 	
 	        conn = DriverManager.getConnection(DB_URL, connectionProps);
-		    
-		    //System.out.println("User \"" + USER + "\" connected to database.");
-    	
+		        	
     	} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
@@ -87,12 +86,13 @@ public class NavigationServlet extends HttpServlet {
 	}
 
 	private String getHtmlForInbox(String email, String pwd) {
-		try (Statement st = conn.createStatement()) {
-			ResultSet sqlRes = st.executeQuery(
-				"SELECT * FROM mail "
-				+ "WHERE receiver='" + email + "'"
-				+ "ORDER BY [time] DESC"
-			);
+		try {
+			
+			PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE receiver=? ORDER BY [time] DESC");
+			
+			statement.setString(1, email);
+			
+			ResultSet sqlRes = statement.executeQuery();
 			
 			StringBuilder output = new StringBuilder();
 			
@@ -131,12 +131,14 @@ public class NavigationServlet extends HttpServlet {
 	}
 	
 	private String getHtmlForSent(String email) {
-		try (Statement st = conn.createStatement()) {
-			ResultSet sqlRes = st.executeQuery(
-				"SELECT * FROM mail "
-				+ "WHERE sender='" + email + "'"
-				+ "ORDER BY [time] DESC"
-			);
+		try {
+			
+			PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE sender=? ORDER BY [time] DESC");
+			
+			statement.setString(1, email);
+			
+			ResultSet sqlRes = statement.executeQuery();
+			
 			
 			StringBuilder output = new StringBuilder();
 			output.append("<div>\r\n");

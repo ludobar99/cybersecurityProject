@@ -1,9 +1,11 @@
-package servlet;
+package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,10 +17,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class RegisterServlet
+ * Servlet implementation class HelloWorldServlet
  */
-@WebServlet("/RegisterServlet")
-public class RegisterServlet extends HttpServlet {
+@WebServlet("/LoginServlet")
+public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
 	private static final String USER = "sa";
@@ -28,10 +30,10 @@ public class RegisterServlet extends HttpServlet {
     
 	private static Connection conn;
 	
-    /**
+	/**
      * @see HttpServlet#HttpServlet()
      */
-    public RegisterServlet() {
+    public LoginServlet() {
         super();
     }
     
@@ -55,40 +57,35 @@ public class RegisterServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		
-		// The replacement escapes apostrophe special character in order to store it in SQL
-		String name = request.getParameter("name").replace("'", "''");
-		String surname = request.getParameter("surname").replace("'", "''");;
-		String email = request.getParameter("email").replace("'", "''");;
-		String pwd = request.getParameter("password").replace("'", "''");;
+		String email = request.getParameter("email");
+		String pwd = request.getParameter("password");
 		
-		try (Statement st = conn.createStatement()) {
-			ResultSet sqlRes = st.executeQuery(
-				"SELECT * "
-				+ "FROM [user] "
-				+ "WHERE email='" + email + "'"
-			);
+		try {
+			
+			PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=? AND PASSWORD=?");
+			
+			statement.setString(1, email);
+			statement.setString(2, pwd);
+			
+			ResultSet sqlRes = statement.executeQuery();
 			
 			if (sqlRes.next()) {
-				System.out.println("Email already registered!");
-				request.getRequestDispatcher("register.html").forward(request, response);
+				request.setAttribute("email", sqlRes.getString(3));
+				request.setAttribute("password", sqlRes.getString(4));
+				
+				System.out.println("Login succeeded!");
+				request.setAttribute("content", "");
+				request.getRequestDispatcher("home.jsp").forward(request, response);
+				
 				
 			} else {
-				st.execute(
-					"INSERT INTO [user] ( name, surname, email, password ) "
-					+ "VALUES ( '" + name + "', '" + surname + "', '" + email + "', '" + pwd + "' )"
-				);
-				
-				request.setAttribute("email", email);
-				request.setAttribute("password", pwd);
-				
-				System.out.println("Registration succeeded!");
-				request.getRequestDispatcher("home.jsp").forward(request, response);
+				System.out.println("Login failed!");
+				request.getRequestDispatcher("login.html").forward(request, response);
 			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			request.getRequestDispatcher("register.html").forward(request, response);
+			request.getRequestDispatcher("login.html").forward(request, response);
 		}
 	}
-
 }
