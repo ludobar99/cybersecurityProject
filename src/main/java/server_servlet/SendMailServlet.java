@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Date;
 import java.util.Properties;
 
@@ -16,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import util.SessionManager;
+import util.Validator;
 
 /**
  * Servlet implementation class SendMailServlet
@@ -59,20 +58,26 @@ public class SendMailServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 	
-		
-		System.out.println("session: "+ request.getSession());
-		String sender = request.getParameter("email").replace("'", "''");;
-		String receiver = request.getParameter("receiver").replace("'", "''");;
-		String subject = request.getParameter("subject").replace("'", "''");;
-		String body = request.getParameter("body").replace("'", "''");;
+		String sender = request.getParameter("email").replace("'", "''");
+		String receiver = request.getParameter("receiver").replace("'", "''");
+		String subject = request.getParameter("subject").replace("'", "''");
+		String body = request.getParameter("body").replace("'", "''");
 		String timestamp = new Date(System.currentTimeMillis()).toInstant().toString();
-		
 		
 		if (SessionManager.getSessionUser(request.getSession(false)).compareTo(sender) != 0) {
 			
 			request.getRequestDispatcher("login.html").forward(request, response);
+			return;
 		
-		} else {
+		}
+		
+		// validation
+		if (!Validator.validateEmail(sender) | !Validator.validateEmail(receiver)) {
+			System.out.println("Invalid email");
+			request.getRequestDispatcher("login.html").forward(request, response);
+			return;
+		}
+		
 		
 		try {
 			
@@ -92,6 +97,5 @@ public class SendMailServlet extends HttpServlet {
 		
 		request.setAttribute("email", sender);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
-	}
 	}
 }

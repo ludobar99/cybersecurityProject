@@ -7,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Properties;
 
 import jakarta.servlet.ServletException;
@@ -15,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import util.SessionManager;
+import util.Validator;
 
 /**
  * Servlet implementation class NavigationServlet
@@ -63,10 +63,17 @@ public class NavigationServlet extends HttpServlet {
 		if (SessionManager.getSessionUser(request.getSession(false)).compareTo(email) != 0) {
 		
 			request.getRequestDispatcher("login.html").forward(request, response);
+			return;
 		
 		} 
 		
-		else {
+		//validation
+		if (!Validator.validateEmail(email)) {
+			System.out.println("Invalid email");
+			request.getRequestDispatcher("login.html").forward(request, response);
+			return;
+		}
+		
 			
 		if (request.getParameter("newMail") != null)
 		
@@ -91,7 +98,6 @@ public class NavigationServlet extends HttpServlet {
 		request.setAttribute("email", email);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
 			
-		}
 	}
 
 	private String getHtmlForInbox(String email) {
@@ -105,12 +111,23 @@ public class NavigationServlet extends HttpServlet {
 			
 			StringBuilder output = new StringBuilder();
 			
+			String _emailSender = sqlRes.getString(1);
+			String _subject = sqlRes.getString(3);
+			String _body = sqlRes.getString(4);
+			String _timestamp = sqlRes.getString(5);
+			
+			// validation
+			if (!Validator.validateEmail(_emailSender)) {
+				System.out.println("Invalid email");
+				return "";
+			}
+			
 			while (sqlRes.next()) {
 				output.append("<div style=\"white-space: pre-wrap;\"><span style=\"color:grey;\">");
-				output.append("FROM:&emsp;" + sqlRes.getString(1) + "&emsp;&emsp;AT:&emsp;" + sqlRes.getString(5));
+				output.append("FROM:&emsp;" + _emailSender + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
-				output.append("<br><b>" + sqlRes.getString(3) + "</b>\r\n");
-				output.append("<br>" + sqlRes.getString(4));
+				output.append("<br><b>" + _subject + "</b>\r\n");
+				output.append("<br>" + _body);
 				output.append("</div>\r\n");
 				
 				output.append("<hr style=\"border-top: 2px solid black;\">\r\n");
@@ -128,6 +145,12 @@ public class NavigationServlet extends HttpServlet {
 	
 	
 	private String getHtmlForNewMail(String email) {
+		// validation
+		if (!Validator.validateEmail(email)) {
+			System.out.println("Invalid email");
+			return "";
+		}
+		
 		return 
 			"<form id=\"submitForm\" class=\"form-resize\" action=\"SendMailServlet\" method=\"post\">\r\n"
 			+ "		<input type=\"hidden\" name=\"email\" value=\""+email+"\">\r\n"
@@ -148,15 +171,26 @@ public class NavigationServlet extends HttpServlet {
 			ResultSet sqlRes = statement.executeQuery();
 			
 			
+			String _emailReceiver = sqlRes.getString(2);
+			String _subject = sqlRes.getString(3);
+			String _body = sqlRes.getString(4);
+			String _timestamp = sqlRes.getString(5);
+			
+			// validation
+			if (!Validator.validateEmail(_emailReceiver)) {
+				System.out.println("Invalid email");
+				return "";
+			}
+			
 			StringBuilder output = new StringBuilder();
 			output.append("<div>\r\n");
 			
 			while (sqlRes.next()) {
 				output.append("<div style=\"white-space: pre-wrap;\"><span style=\"color:grey;\">");
-				output.append("TO:&emsp;" + sqlRes.getString(2) + "&emsp;&emsp;AT:&emsp;" + sqlRes.getString(5));
+				output.append("TO:&emsp;" + _emailReceiver + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
-				output.append("<br><b>" + sqlRes.getString(3) + "</b>\r\n");
-				output.append("<br>" + sqlRes.getString(4));
+				output.append("<br><b>" + _subject + "</b>\r\n");
+				output.append("<br>" + _body);
 				output.append("</div>\r\n");
 				
 				output.append("<hr style=\"border-top: 2px solid black;\">\r\n");

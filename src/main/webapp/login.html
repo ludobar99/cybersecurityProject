@@ -14,7 +14,7 @@
 			</tr>
 			<tr>
 				<td><font face="verdana" size="2px">Password:</font></td>
-				<td><input type="password" id="password" name="password" required></td>
+				<td><input type="password" id="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required></td>
 			</tr>
 		</table>
 		<input type="hidden" name="inbox">

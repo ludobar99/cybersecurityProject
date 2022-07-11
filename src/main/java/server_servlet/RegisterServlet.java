@@ -7,13 +7,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Properties;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import util.Validator;
 
 /**
  * Servlet implementation class RegisterServlet
@@ -58,9 +58,18 @@ public class RegisterServlet extends HttpServlet {
 		
 		// The replacement escapes apostrophe special character in order to store it in SQL
 		String name = request.getParameter("name").replace("'", "''");
-		String surname = request.getParameter("surname").replace("'", "''");;
-		String email = request.getParameter("email").replace("'", "''");;
-		String pwd = request.getParameter("password").replace("'", "''");;
+		String surname = request.getParameter("surname").replace("'", "''");
+		String email = request.getParameter("email").replace("'", "''");
+		String pwd = request.getParameter("password").replace("'", "''");
+		
+		
+		// validating field
+		if (!Validator.validateEmail(email) | !Validator.validatePassword(pwd) | !Validator.validateName(name)| !Validator.validateName(surname)) {
+				System.out.println("invalid field");
+				request.getRequestDispatcher("register.html").forward(request, response);
+				return;
+		}
+		
 		
 		try {
 			

@@ -8,15 +8,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Properties;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import util.SessionManager;
+import util.Validator;
 
 /**
  * Servlet implementation class HelloWorldServlet
@@ -61,6 +60,17 @@ public class LoginServlet extends HttpServlet {
 		String email = request.getParameter("email");
 		String pwd = request.getParameter("password");
 		
+		//validation
+		if (!Validator.validateEmail(email) | !Validator.validatePassword(pwd)) {
+			System.out.println("invalid email or password");
+			request.getRequestDispatcher("login.html").forward(request, response);
+			return;
+		} 
+		
+		//sanification here
+		// ...
+	
+		
 		try {
 			
 			PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=? AND PASSWORD=?");
@@ -72,11 +82,18 @@ public class LoginServlet extends HttpServlet {
 			
 			if (sqlRes.next()) {
 				
+				String _email = sqlRes.getString(3);
+				String _password = sqlRes.getString(4);
 				// if login succeeded, the session is associated with a user
-				SessionManager.setSessionUser(request.getSession(), sqlRes.getString(3));
+				SessionManager.setSessionUser(request.getSession(), _email);
 				
-				request.setAttribute("email", sqlRes.getString(3));
-				request.setAttribute("password", sqlRes.getString(4));
+				//validating data from database
+				if (!Validator.validateEmail(_email) | !Validator.validatePassword(_password)) {
+					return;
+				}
+				
+				request.setAttribute("email", _email);
+				request.setAttribute("password", _password);
 				
 				System.out.println("Login succeeded!");
 				request.setAttribute("content", "");
