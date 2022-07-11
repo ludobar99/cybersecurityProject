@@ -29,7 +29,6 @@
 		
 		<form class="btn-group" action="NavigationServlet" method="post">
 			<input type="hidden" name="email" value="<%= request.getAttribute("email") %>">
-			<input type="hidden" name="password" value="<%= request.getAttribute("password") %>">		
 			<input type="text" name="search"  placeholder="Search..." id="item">
 			<input type="submit" name="search"  value="Search">
 			<input type="submit" name="newMail" value="New Mail">

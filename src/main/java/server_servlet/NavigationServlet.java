@@ -57,25 +57,24 @@ public class NavigationServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		
+		String email = request.getParameter("email").replace("'", "''");		
 		
-		String email = request.getParameter("email").replace("'", "''");
-		String pwd = request.getParameter("password").replace("'", "''");
-		
-		
-		// if the user session and the email do not correspond, the user is redirected to login.html
+		// if user session and email are different, the user is redirected to login.html
 		if (SessionManager.getSessionUser(request.getSession(false)).compareTo(email) != 0) {
 		
 			request.getRequestDispatcher("login.html").forward(request, response);
 		
-		} else {
+		} 
+		
+		else {
 			
 		if (request.getParameter("newMail") != null)
 		
-			request.setAttribute("content", getHtmlForNewMail(email, pwd));
+			request.setAttribute("content", getHtmlForNewMail(email));
 		
 		else if (request.getParameter("inbox") != null)
 			
-			request.setAttribute("content", getHtmlForInbox(email, pwd));
+			request.setAttribute("content", getHtmlForInbox(email));
 	
 		
 		else if (request.getParameter("sent") != null)
@@ -92,10 +91,10 @@ public class NavigationServlet extends HttpServlet {
 		request.setAttribute("email", email);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
 			
-	}
+		}
 	}
 
-	private String getHtmlForInbox(String email, String pwd) {
+	private String getHtmlForInbox(String email) {
 		try {
 			
 			PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE receiver=? ORDER BY [time] DESC");
@@ -128,11 +127,10 @@ public class NavigationServlet extends HttpServlet {
 	}
 	
 	
-	private String getHtmlForNewMail(String email, String pwd) {
+	private String getHtmlForNewMail(String email) {
 		return 
 			"<form id=\"submitForm\" class=\"form-resize\" action=\"SendMailServlet\" method=\"post\">\r\n"
 			+ "		<input type=\"hidden\" name=\"email\" value=\""+email+"\">\r\n"
-			+ "		<input type=\"hidden\" name=\"password\" value=\""+pwd+"\">\r\n"
 			+ "		<input class=\"single-row-input\" type=\"email\" name=\"receiver\" placeholder=\"Receiver\" required>\r\n"
 			+ "		<input class=\"single-row-input\" type=\"text\"  name=\"subject\" placeholder=\"Subject\" required>\r\n"
 			+ "		<textarea class=\"textarea-input\" name=\"body\" placeholder=\"Body\" wrap=\"hard\" required></textarea>\r\n"

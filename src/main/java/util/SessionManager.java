@@ -2,6 +2,11 @@ package util;
 
 import jakarta.servlet.http.HttpSession;
 
+/*
+ * Session information will be used to check if the session is valid. Furthermore, it will be checked
+ * that the user email corresponds to session user email.
+ * 
+ */
 public class SessionManager {
 	
 	/*
@@ -12,6 +17,7 @@ public class SessionManager {
 		session.setAttribute("user", email);
 	
 	}
+	
 	
 	/*
 	 * Sets session user. ToCHECK: if session is not valid, user should be null.
