@@ -15,6 +15,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import util.SessionManager;
 
 /**
  * Servlet implementation class HelloWorldServlet
@@ -47,7 +49,6 @@ public class LoginServlet extends HttpServlet {
 	
 	        conn = DriverManager.getConnection(DB_URL, connectionProps);
 		    
-		    //System.out.println("User \"" + USER + "\" connected to database.");
     	
     	} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
@@ -56,6 +57,18 @@ public class LoginServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
+		
+		/*
+		 * Logs out and redirects to login.html. The session is invalidated
+		 * It would be better to have another servlet for this.
+		 * 
+		 */
+		if (request.getParameter("logout") != null) {
+			
+			request.getSession(false).invalidate();
+			request.getRequestDispatcher("login.html").forward(request, response);
+		
+		} else {
 		
 		String email = request.getParameter("email");
 		String pwd = request.getParameter("password");
@@ -70,6 +83,10 @@ public class LoginServlet extends HttpServlet {
 			ResultSet sqlRes = statement.executeQuery();
 			
 			if (sqlRes.next()) {
+				
+				// if login succeeded, the session is associated with a user
+				SessionManager.setSessionUser(request.getSession(), sqlRes.getString(3));
+				
 				request.setAttribute("email", sqlRes.getString(3));
 				request.setAttribute("password", sqlRes.getString(4));
 				
@@ -86,6 +103,7 @@ public class LoginServlet extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.getRequestDispatcher("login.html").forward(request, response);
+		}
 		}
 	}
 }

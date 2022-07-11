@@ -15,6 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import util.SessionManager;
 
 /**
  * Servlet implementation class SendMailServlet
@@ -57,6 +58,7 @@ public class SendMailServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
+	
 		
 		System.out.println("session: "+ request.getSession());
 		String sender = request.getParameter("email").replace("'", "''");;
@@ -64,6 +66,13 @@ public class SendMailServlet extends HttpServlet {
 		String subject = request.getParameter("subject").replace("'", "''");;
 		String body = request.getParameter("body").replace("'", "''");;
 		String timestamp = new Date(System.currentTimeMillis()).toInstant().toString();
+		
+		
+		if (SessionManager.getSessionUser(request.getSession(false)).compareTo(sender) != 0) {
+			
+			request.getRequestDispatcher("login.html").forward(request, response);
+		
+		} else {
 		
 		try {
 			
@@ -84,5 +93,5 @@ public class SendMailServlet extends HttpServlet {
 		request.setAttribute("email", sender);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
 	}
-
+	}
 }

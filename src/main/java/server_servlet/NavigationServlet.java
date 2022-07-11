@@ -14,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import util.SessionManager;
 
 /**
  * Servlet implementation class NavigationServlet
@@ -61,6 +62,13 @@ public class NavigationServlet extends HttpServlet {
 		String pwd = request.getParameter("password").replace("'", "''");
 		
 		
+		// if the user session and the email do not correspond, the user is redirected to login.html
+		if (SessionManager.getSessionUser(request.getSession(false)).compareTo(email) != 0) {
+		
+			request.getRequestDispatcher("login.html").forward(request, response);
+		
+		} else {
+			
 		if (request.getParameter("newMail") != null)
 		
 			request.setAttribute("content", getHtmlForNewMail(email, pwd));
@@ -68,6 +76,7 @@ public class NavigationServlet extends HttpServlet {
 		else if (request.getParameter("inbox") != null)
 			
 			request.setAttribute("content", getHtmlForInbox(email, pwd));
+	
 		
 		else if (request.getParameter("sent") != null)
 			
@@ -83,6 +92,7 @@ public class NavigationServlet extends HttpServlet {
 		request.setAttribute("email", email);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
 			
+	}
 	}
 
 	private String getHtmlForInbox(String email, String pwd) {

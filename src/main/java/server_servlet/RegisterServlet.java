@@ -89,7 +89,11 @@ public class RegisterServlet extends HttpServlet {
 				request.setAttribute("password", pwd);
 				
 				System.out.println("Registration succeeded!");
-				request.getRequestDispatcher("home.jsp").forward(request, response);
+				
+				 // Logs in via the Login Servlet
+				
+				request.getRequestDispatcher("LoginServlet").forward(request, response);
+			
 			}
 			
 		} catch (SQLException e) {
