@@ -58,18 +58,6 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		
-		/*
-		 * Logs out and redirects to login.html. The session is invalidated
-		 * It would be better to have another servlet for this.
-		 * 
-		 */
-		if (request.getParameter("logout") != null) {
-			
-			request.getSession(false).invalidate();
-			request.getRequestDispatcher("login.html").forward(request, response);
-		
-		} else {
-		
 		String email = request.getParameter("email");
 		String pwd = request.getParameter("password");
 		
@@ -103,7 +91,6 @@ public class LoginServlet extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.getRequestDispatcher("login.html").forward(request, response);
-		}
 		}
 	}
 }

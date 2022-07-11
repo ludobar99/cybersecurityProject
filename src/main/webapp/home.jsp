@@ -13,12 +13,12 @@
 	  <div class="box">
 	  	<div>
 			<img src="images/email_icon.jpg" align="left" />
-			<p>E-MAIL CLIENT
+			<p>e-mail client
 				<br><% out.println(request.getAttribute("email")); %>
 			</p>
 	  	</div>
 	  	<div id="right">
-	  	<form class="btn-group" action="LoginServlet" method="post">
+	  	<form class="btn-group" action="LogoutServlet" method="post">
 			<input type="submit" name="logout" value="Logout">
 		</form>
 	  	</div>
