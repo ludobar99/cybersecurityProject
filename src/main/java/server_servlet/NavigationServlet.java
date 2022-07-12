@@ -111,18 +111,19 @@ public class NavigationServlet extends HttpServlet {
 			
 			StringBuilder output = new StringBuilder();
 			
-			String _emailSender = sqlRes.getString(1);
-			String _subject = sqlRes.getString(3);
-			String _body = sqlRes.getString(4);
-			String _timestamp = sqlRes.getString(5);
-			
-			// validation
-			if (!Validator.validateEmail(_emailSender)) {
-				System.out.println("Invalid email");
-				return "";
-			}
 			
 			while (sqlRes.next()) {
+				String _emailSender = sqlRes.getString(1);
+				String _subject = sqlRes.getString(3);
+				String _body = sqlRes.getString(4);
+				String _timestamp = sqlRes.getString(5);
+				
+				// validation
+				if (!Validator.validateEmail(_emailSender)) {
+					System.out.println("Invalid email");
+					return "";
+				}
+				
 				output.append("<div style=\"white-space: pre-wrap;\"><span style=\"color:grey;\">");
 				output.append("FROM:&emsp;" + _emailSender + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
@@ -171,21 +172,21 @@ public class NavigationServlet extends HttpServlet {
 			ResultSet sqlRes = statement.executeQuery();
 			
 			
-			String _emailReceiver = sqlRes.getString(2);
-			String _subject = sqlRes.getString(3);
-			String _body = sqlRes.getString(4);
-			String _timestamp = sqlRes.getString(5);
-			
-			// validation
-			if (!Validator.validateEmail(_emailReceiver)) {
-				System.out.println("Invalid email");
-				return "";
-			}
-			
 			StringBuilder output = new StringBuilder();
 			output.append("<div>\r\n");
 			
 			while (sqlRes.next()) {
+				String _emailReceiver = sqlRes.getString(2);
+				String _subject = sqlRes.getString(3);
+				String _body = sqlRes.getString(4);
+				String _timestamp = sqlRes.getString(5);
+				
+				// validation
+				if (!Validator.validateEmail(_emailReceiver)) {
+					System.out.println("Invalid email");
+					return "";
+				}
+				
 				output.append("<div style=\"white-space: pre-wrap;\"><span style=\"color:grey;\">");
 				output.append("TO:&emsp;" + _emailReceiver + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
