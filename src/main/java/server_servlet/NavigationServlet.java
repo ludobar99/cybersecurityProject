@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,6 +76,9 @@ public class NavigationServlet extends HttpServlet {
 			return;
 		}
 		
+		//sanification
+		email = StringEscapeUtils.escapeHtml4(email);
+					
 			
 		if (request.getParameter("newMail") != null)
 		
@@ -91,7 +96,9 @@ public class NavigationServlet extends HttpServlet {
 		else if (request.getParameter("search") != null) {
 			
 			String item = request.getParameter("search").replace("'", "''");
+			
 			request.setAttribute("content", getHTMLforSearch(item));
+	
 		
 		}
 	
@@ -124,6 +131,13 @@ public class NavigationServlet extends HttpServlet {
 					return "";
 				}
 				
+				//sanification
+				_emailSender = StringEscapeUtils.escapeHtml4(_emailSender);
+				_body = StringEscapeUtils.escapeHtml4(_body);
+				_subject = StringEscapeUtils.escapeHtml4(_subject);
+				_timestamp = StringEscapeUtils.escapeHtml4(_timestamp);
+				
+				
 				output.append("<div style=\"white-space: pre-wrap;\"><span style=\"color:grey;\">");
 				output.append("FROM:&emsp;" + _emailSender + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
@@ -151,6 +165,10 @@ public class NavigationServlet extends HttpServlet {
 			System.out.println("Invalid email");
 			return "";
 		}
+		
+		//sanification
+		email = StringEscapeUtils.escapeHtml4(email);
+
 		
 		return 
 			"<form id=\"submitForm\" class=\"form-resize\" action=\"SendMailServlet\" method=\"post\">\r\n"
@@ -187,6 +205,12 @@ public class NavigationServlet extends HttpServlet {
 					return "";
 				}
 				
+				//sanification
+				_emailReceiver = StringEscapeUtils.escapeHtml4(_emailReceiver);
+				_body = StringEscapeUtils.escapeHtml4(_body);
+				_subject = StringEscapeUtils.escapeHtml4(_subject);
+				_timestamp = StringEscapeUtils.escapeHtml4(_timestamp);
+				
 				output.append("<div style=\"white-space: pre-wrap;\"><span style=\"color:grey;\">");
 				output.append("TO:&emsp;" + _emailReceiver + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
@@ -210,6 +234,10 @@ public class NavigationServlet extends HttpServlet {
 	private String getHTMLforSearch(String item) {
 		
 			StringBuilder output = new StringBuilder();
+			
+			//sanification
+			item = StringEscapeUtils.escapeHtml4(item);
+			
 			output.append("<div>\r\n");
 			
 			output.append("<p>You searched for: "+ item +"</p>");

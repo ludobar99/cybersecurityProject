@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -69,6 +71,13 @@ public class RegisterServlet extends HttpServlet {
 				request.getRequestDispatcher("register.html").forward(request, response);
 				return;
 		}
+		
+		//sanitizing
+		email = StringEscapeUtils.escapeHtml4(email);
+		pwd = StringEscapeUtils.escapeHtml4(pwd);
+		name = StringEscapeUtils.escapeHtml4(name);
+		surname = StringEscapeUtils.escapeHtml4(surname);
+		
 		
 		
 		try {

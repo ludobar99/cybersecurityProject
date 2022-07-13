@@ -13,5 +13,7 @@
 	<classpathentry kind="lib" path="/Users/ludo/Desktop/jakarta.servlet.jsp.jstl-2.0.0.jar"/>
 	<classpathentry kind="lib" path="/Users/ludo/Downloads/sqljdbc_10.2\ita/mssql-jdbc-10.2.1.jre8.jar"/>
 	<classpathentry kind="lib" path="/Users/ludo/Downloads/sqljdbc_10.2\ita/mssql-jdbc-10.2.1.jre17.jar"/>
+	<classpathentry kind="lib" path="/Users/ludo/Desktop/commons-text-1.9/commons-text-1.9.jar"/>
+	<classpathentry kind="lib" path="/Users/ludo/Desktop/commons-lang3-3.12.0/commons-lang3-3.12.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

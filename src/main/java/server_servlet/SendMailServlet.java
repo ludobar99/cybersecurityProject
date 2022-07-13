@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Properties;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -77,6 +79,13 @@ public class SendMailServlet extends HttpServlet {
 			request.getRequestDispatcher("login.html").forward(request, response);
 			return;
 		}
+		
+		//sanification
+		sender = StringEscapeUtils.escapeHtml4(sender);
+		receiver = StringEscapeUtils.escapeHtml4(receiver);
+		subject = StringEscapeUtils.escapeHtml4(subject);
+		body = StringEscapeUtils.escapeHtml4(body);
+				
 		
 		
 		try {

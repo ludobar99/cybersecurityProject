@@ -26,10 +26,17 @@ public class LogoutServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-					
-		request.getSession(false).invalidate();
-		request.getRequestDispatcher("login.html").forward(request, response);
-
+		
+		try {
+			
+			request.getSession(false).invalidate();
+			request.getRequestDispatcher("login.html").forward(request, response);
+	
+		}	catch (NullPointerException e) { 
+			
+			request.getRequestDispatcher("login.html").forward(request, response); 
+			
+		}
 
 	}
 

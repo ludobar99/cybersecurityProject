@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.commons.text.StringEscapeUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,9 +68,9 @@ public class LoginServlet extends HttpServlet {
 			return;
 		} 
 		
-		//sanification here
-		// ...
-	
+		//sanification
+		email = StringEscapeUtils.escapeHtml4(email);
+		pwd = StringEscapeUtils.escapeHtml4(pwd);
 		
 		try {
 			
