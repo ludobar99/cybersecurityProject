@@ -2,7 +2,8 @@ package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
-
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,6 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import util.Hash;
 import util.SessionManager;
 import util.Validator;
 
@@ -73,11 +75,10 @@ public class LoginServlet extends HttpServlet {
 		pwd = StringEscapeUtils.escapeHtml4(pwd);
 		
 		try {
-			
-			PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=? AND PASSWORD=?");
+				
+			PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=?");
 			
 			statement.setString(1, email);
-			statement.setString(2, pwd);
 			
 			ResultSet sqlRes = statement.executeQuery();
 			
@@ -85,16 +86,21 @@ public class LoginServlet extends HttpServlet {
 				
 				String _email = sqlRes.getString(3);
 				String _password = sqlRes.getString(4);
-				// if login succeeded, the session is associated with a user
-				SessionManager.setSessionUser(request.getSession(), _email);
 				
-				//validating data from database
-				if (!Validator.validateEmail(_email) | !Validator.validatePassword(_password)) {
+				//checking hash
+				if (!Hash.validatePassword(pwd, _password)) {
+					
+					System.out.println("Login failed!");
+					request.getRequestDispatcher("login.html").forward(request, response);
+				
 					return;
 				}
 				
+				// if login succeeded, the session is associated with a user
+				SessionManager.setSessionUser(request.getSession(), _email);
+				
 				request.setAttribute("email", _email);
-				request.setAttribute("password", _password);
+				//request.setAttribute("password", _password);
 				
 				System.out.println("Login succeeded!");
 				request.setAttribute("content", "");
@@ -108,7 +114,14 @@ public class LoginServlet extends HttpServlet {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			request.getRequestDispatcher("login.html").forward(request, response);
+			request.getRequestDispatcher("login.html").forward(request, response);}
+
+		catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

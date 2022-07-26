@@ -2,6 +2,8 @@ package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import util.Hash;
 import util.Validator;
 
 /**
@@ -74,9 +77,25 @@ public class RegisterServlet extends HttpServlet {
 		
 		//sanitizing
 		email = StringEscapeUtils.escapeHtml4(email);
-		pwd = StringEscapeUtils.escapeHtml4(pwd);
+		//pwd = StringEscapeUtils.escapeHtml4(pwd);
 		name = StringEscapeUtils.escapeHtml4(name);
 		surname = StringEscapeUtils.escapeHtml4(surname);
+		
+		/*
+		 * 
+		 * hashing password
+		 */
+		
+		String password = pwd;
+		try {
+			password = Hash.generateHash(pwd);
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InvalidKeySpecException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		
 		
@@ -90,29 +109,32 @@ public class RegisterServlet extends HttpServlet {
 			
 			
 			if (sqlRes.next()) {
+				
 				System.out.println("Email already registered!");
 				request.getRequestDispatcher("register.html").forward(request, response);
+				return;
 				
-			} else {
-				PreparedStatement statement2 = conn.prepareStatement("INSERT INTO [user] ( name, surname, email, password ) VALUES (?,?,?,?)");
-
-				statement2.setString(1, name);
-				statement2.setString(2, surname);
-				statement2.setString(3, email);
-				statement2.setString(4, pwd);
-				
-				statement2.execute();
-				
-				request.setAttribute("email", email);
-				request.setAttribute("password", pwd);
-				
-				System.out.println("Registration succeeded!");
-				
-				 // Logs in via the Login Servlet
-				
-				request.getRequestDispatcher("LoginServlet").forward(request, response);
+			} 
 			
-			}
+			PreparedStatement statement2 = conn.prepareStatement("INSERT INTO [user] ( name, surname, email, password ) VALUES (?,?,?,?)");
+	
+			statement2.setString(1, name);
+			statement2.setString(2, surname);
+			statement2.setString(3, email);
+			statement2.setString(4, password);					
+				
+			statement2.execute();
+					
+			request.setAttribute("email", email);
+			request.setAttribute("password", pwd);
+				
+			System.out.println("Registration succeeded!");
+					
+			// Logs in via the Login Servlet
+			
+			request.getRequestDispatcher("LoginServlet").forward(request, response);
+			
+			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
