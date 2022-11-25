@@ -3,6 +3,7 @@ package server_servlet;
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,6 +14,7 @@ import java.util.Properties;
 
 import org.apache.commons.text.StringEscapeUtils;
 
+import client.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +28,9 @@ import util.Validator;
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    
+	/*
+	 * TODO: environment variables
+	 */
 	private static final String USER = "sa";
 	private static final String PWD = "Strong.Pwd-123";
 	private static final String DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
@@ -51,7 +55,7 @@ public class RegisterServlet extends HttpServlet {
 	
 	        conn = DriverManager.getConnection(DB_URL, connectionProps);
 		    
-		    //System.out.println("User \"" + USER + "\" connected to database.");
+		   
     	
     	} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
@@ -61,31 +65,34 @@ public class RegisterServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		
-		// The replacement escapes apostrophe special character in order to store it in SQL
+		/*
+		 * The replacement escapes apostrophe special character in order to store it in SQL.
+		 */
 		String name = request.getParameter("name").replace("'", "''");
 		String surname = request.getParameter("surname").replace("'", "''");
 		String email = request.getParameter("email").replace("'", "''");
 		String pwd = request.getParameter("password").replace("'", "''");
 		
 		
-		// validating field
+		/*
+		 *  Validating fields
+		 */
 		if (!Validator.validateEmail(email) | !Validator.validatePassword(pwd) | !Validator.validateName(name)| !Validator.validateName(surname)) {
 				System.out.println("invalid field");
 				request.getRequestDispatcher("register.html").forward(request, response);
 				return;
 		}
 		
-		//sanitizing
+		/*
+		 * Sanitizing fields
+		 */
 		email = StringEscapeUtils.escapeHtml4(email);
-		//pwd = StringEscapeUtils.escapeHtml4(pwd);
 		name = StringEscapeUtils.escapeHtml4(name);
 		surname = StringEscapeUtils.escapeHtml4(surname);
 		
 		/*
-		 * 
-		 * hashing password
+		 * Hashing password. The hash is stored in the database
 		 */
-		
 		String password = pwd;
 		try {
 			password = Hash.generateHash(pwd);
@@ -107,7 +114,9 @@ public class RegisterServlet extends HttpServlet {
 			
 			ResultSet sqlRes = statement.executeQuery();
 			
-			
+			/*
+			 * Only one account per email can be created
+			 */
 			if (sqlRes.next()) {
 				
 				System.out.println("Email already registered!");
@@ -115,14 +124,28 @@ public class RegisterServlet extends HttpServlet {
 				return;
 				
 			} 
+		
+			User thisUser = new User(email);
 			
-			PreparedStatement statement2 = conn.prepareStatement("INSERT INTO [user] ( name, surname, email, password ) VALUES (?,?,?,?)");
+			/*
+			 * Generates user's keypair (public and private key). It writes the private key in a file
+			 * on the client side and  returns the public key.
+			 */
+			PublicKey publickey = thisUser.createKeys(email);
+			
+			/*
+			 * Encodes the publickey to a byte array to store it in the database.
+			 */
+			byte[] publicKeyBytes = publickey.getEncoded();
+			
+			PreparedStatement statement2 = conn.prepareStatement("INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)");
 	
 			statement2.setString(1, name);
 			statement2.setString(2, surname);
 			statement2.setString(3, email);
-			statement2.setString(4, password);					
-				
+			statement2.setString(4, password);	
+			statement2.setBytes(5, publicKeyBytes);	
+			
 			statement2.execute();
 					
 			request.setAttribute("email", email);
@@ -130,7 +153,9 @@ public class RegisterServlet extends HttpServlet {
 				
 			System.out.println("Registration succeeded!");
 					
-			// Logs in via the Login Servlet
+			/*
+			 *  After registration, logs in via Login Servlet
+			 */
 			
 			request.getRequestDispatcher("LoginServlet").forward(request, response);
 			

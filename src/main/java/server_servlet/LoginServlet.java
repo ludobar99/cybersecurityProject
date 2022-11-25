@@ -27,6 +27,9 @@ import util.Validator;
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
+	/*
+	 * TODO: environment variables
+	 */
 	private static final String USER = "sa";
 	private static final String PWD = "Strong.Pwd-123";
 	private static final String DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
@@ -63,19 +66,23 @@ public class LoginServlet extends HttpServlet {
 		String email = request.getParameter("email");
 		String pwd = request.getParameter("password");
 		
-		//validation
+		/*
+		 * validating email and password
+		 */
 		if (!Validator.validateEmail(email) | !Validator.validatePassword(pwd)) {
 			System.out.println("invalid email or password");
 			request.getRequestDispatcher("login.html").forward(request, response);
 			return;
 		} 
 		
-		//sanification
+		/*
+		 * sanitizing email and password
+		 */
 		email = StringEscapeUtils.escapeHtml4(email);
 		pwd = StringEscapeUtils.escapeHtml4(pwd);
 		
 		try {
-				
+
 			PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=?");
 			
 			statement.setString(1, email);
@@ -87,7 +94,11 @@ public class LoginServlet extends HttpServlet {
 				String _email = sqlRes.getString(3);
 				String _password = sqlRes.getString(4);
 				
-				//checking hash
+				/*
+				 * checks the correctness of the password. It generates an hash from the password 
+				 * and compares it with the hash in the database
+				 * 
+				 */
 				if (!Hash.validatePassword(pwd, _password)) {
 					
 					System.out.println("Login failed!");
@@ -96,11 +107,12 @@ public class LoginServlet extends HttpServlet {
 					return;
 				}
 				
-				// if login succeeded, the session is associated with a user
+				/*
+				 *  if login was successful, the session is associated with the user email
+				 */
 				SessionManager.setSessionUser(request.getSession(), _email);
 				
 				request.setAttribute("email", _email);
-				//request.setAttribute("password", _password);
 				
 				System.out.println("Login succeeded!");
 				request.setAttribute("content", "");

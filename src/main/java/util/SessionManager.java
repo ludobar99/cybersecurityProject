@@ -13,7 +13,6 @@ public class SessionManager {
 	 * Sets session user. ToCHECK: if session is not valid, user should be null.
 	 */
 	public static void setSessionUser(HttpSession session, String email) {
-
 		session.setAttribute("user", email);
 	
 	}
