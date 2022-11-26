@@ -81,6 +81,8 @@ public class NavigationServlet extends HttpServlet {
 		
 		/*
 		 * if the email of the session and the email in the request are different, the user is redirected to login.html
+		 * TODO: fix with digital signature
+		 * vedere come sono gestite le sessioni HTTP su java
 		 */
 		
 		if (SessionManager.getSessionUser(request.getSession(false)).compareTo(email) != 0) {
@@ -172,7 +174,7 @@ public class NavigationServlet extends HttpServlet {
 				try {
 					privateKeybytes = KeyGetter.getPrivateKeyBytes(email);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+
 					e1.printStackTrace();
 				}
 				
@@ -180,7 +182,7 @@ public class NavigationServlet extends HttpServlet {
 				try {
 					privateKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKeybytes);
 				} catch (InvalidKeySpecException | NoSuchAlgorithmException e1) {
-					// TODO Auto-generated catch block
+
 					e1.printStackTrace();
 				}
 				

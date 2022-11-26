@@ -116,6 +116,7 @@ public class RegisterServlet extends HttpServlet {
 			
 			/*
 			 * Only one account per email can be created
+			 * TODO: unique_key / primary_key database
 			 */
 			if (sqlRes.next()) {
 				
@@ -130,11 +131,15 @@ public class RegisterServlet extends HttpServlet {
 			/*
 			 * Generates user's keypair (public and private key). It writes the private key in a file
 			 * on the client side and  returns the public key.
+			 * 
+			 * TODO: make it clear
+			 * TODO: move keys generation on client side
 			 */
 			PublicKey publickey = thisUser.createKeys(email);
 			
 			/*
 			 * Encodes the publickey to a byte array to store it in the database.
+			 * TODO: save in bytes or save in a string?
 			 */
 			byte[] publicKeyBytes = publickey.getEncoded();
 			
@@ -155,6 +160,7 @@ public class RegisterServlet extends HttpServlet {
 					
 			/*
 			 *  After registration, logs in via Login Servlet
+			 *  TODO: re-do login.
 			 */
 			
 			request.getRequestDispatcher("LoginServlet").forward(request, response);
