@@ -3,8 +3,10 @@ services:
   mssql:
     container_name: mssql
     image: mcr.microsoft.com/mssql/server:2019-latest
+    entriypoint:
+      - ./scripts/db-init.sh
     environment:
-      - SA_PASSWORD=${SA_PASSWORD}
+      - SA_PASSWORD=${PWD}
       - ACCEPT_EULA=Y
     ports:
       - "5434:1433"
