@@ -2,7 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ExamProject</groupId>
   <artifactId>ExamProject</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1</version>
+  <packaging>war</packaging>
   <build>
     <resources>
       <resource>
@@ -20,23 +21,32 @@
           <release>11</release>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.2</version>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
-	  	<dependency>
-		  <groupId>jakarta.servlet.jsp.jstl</groupId>
-		  <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-		  <version>2.0.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-text</artifactId>
-		    <version>1.9</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-lang3</artifactId>
-		    <version>3.12.0</version>
-		</dependency>
+    <dependency>
+      <groupId>com.microsoft.sqlserver</groupId>
+      <artifactId>mssql-jdbc</artifactId>
+      <version>12.1.0.jre11-preview</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet.jsp.jstl</groupId>
+      <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.12.0</version>
+    </dependency>
   </dependencies>
 </project>
