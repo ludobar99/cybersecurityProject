@@ -5,6 +5,7 @@
 /Users/ludo/cs_project/ExamProject/src/main/java/asymmetricEncryption/FromBytesToKeyConverter.java
 /Users/ludo/cs_project/ExamProject/src/main/java/asymmetricEncryption/KeysGenerator.java
 /Users/ludo/cs_project/ExamProject/src/main/java/server_servlet/LoginServlet.java
+/Users/ludo/cs_project/ExamProject/src/main/java/digitalSignature/DigestGenerator.java
 /Users/ludo/cs_project/ExamProject/src/main/java/asymmetricEncryption/Encryptor.java
 /Users/ludo/cs_project/ExamProject/src/main/java/client/User.java
 /Users/ludo/cs_project/ExamProject/src/main/java/util/SessionManager.java

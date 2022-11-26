@@ -4,6 +4,7 @@ server_servlet/SendMailServlet.class
 asymmetricEncryption/Encryptor.class
 asymmetricEncryption/FromBytesToKeyConverter.class
 util/SessionManager.class
+digitalSignature/DigestGenerator.class
 server_servlet/LoginServlet.class
 asymmetricEncryption/KeysGenerator.class
 asymmetricEncryption/Decryptor.class
