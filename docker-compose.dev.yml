@@ -1,0 +1,21 @@
+version: "3"
+services:
+  mssql:
+    container_name: mssql
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - SA_PASSWORD=${SA_PASSWORD}
+      - ACCEPT_EULA=Y
+    ports:
+      - "5434:1433"
+    env_file:
+      - .env
+  tomcat:
+    container_name: tomcat
+    depends_on:
+      - mssql
+    image: tomcat
+    volumes:
+      - ./target/ExamProject-0.1.war:/usr/local/tomcat/webapps/ExamProject.war
+    ports:
+      - "8080:8080"
