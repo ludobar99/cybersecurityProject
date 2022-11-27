@@ -85,35 +85,35 @@ public class NavigationServlet extends HttpServlet {
 			response.sendRedirect("login.html");
 			return;
 		}
-		String email = SessionManager.getSessionUser(session);
+		String user = SessionManager.getSessionUser(session);
 		
 		/*
-		 * validating email
+		 * validating user
 		 */
-		if (!Validator.validateEmail(email)) {
-			System.out.println("Invalid email");
+		if (!Validator.validateEmail(user)) {
+			System.out.println("Invalid user");
 			request.getRequestDispatcher("login.html").forward(request, response);
 			return;
 		}
 		
 		
 		/*
-		 * sanitizing email
+		 * sanitizing user
 		 */
-		email = StringEscapeUtils.escapeHtml4(email);
+		user = StringEscapeUtils.escapeHtml4(user);
 					
 		
 		if (request.getParameter("newMail") != null)
 		
-			request.setAttribute("content", getHtmlForNewMail(email));
+			request.setAttribute("content", getHtmlForNewMail(user));
 		
 		else if (request.getParameter("inbox") != null)
 			
-			request.setAttribute("content", getHtmlForInbox(email));
+			request.setAttribute("content", getHtmlForInbox(user));
 	
 		else if (request.getParameter("sent") != null)
 			
-			request.setAttribute("content", getHtmlForSent(email));
+			request.setAttribute("content", getHtmlForSent(user));
 		
 		else if (request.getParameter("search") != null) {
 			
@@ -124,7 +124,7 @@ public class NavigationServlet extends HttpServlet {
 		
 		}
 	
-		request.setAttribute("email", email);
+		request.setAttribute("email", user);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
 			
 	}
@@ -141,6 +141,8 @@ public class NavigationServlet extends HttpServlet {
 			
 			StringBuilder output = new StringBuilder();
 
+            // Container
+			output.append("<div class='mail-inbox-container'>");
 			while (sqlRes.next()) {
 				String _emailSender = sqlRes.getString(1);
 				byte[] _encryptedSubject = sqlRes.getBytes(3);
@@ -213,7 +215,7 @@ public class NavigationServlet extends HttpServlet {
 				_timestamp = StringEscapeUtils.escapeHtml4(_timestamp);
 				
 				
-				output.append("<div style=\"white-space: pre-wrap;\"><span style=\"color:grey;\">");
+				output.append("<div class='mail-inbox'><span>");
 				output.append("FROM:&emsp;" + _emailSender + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
 				output.append("<br><b>" + _subject + "</b>\r\n");
@@ -288,10 +290,8 @@ public class NavigationServlet extends HttpServlet {
 				
 				
 				output.append("</div>\r\n");
-				
-				output.append("<hr style=\"border-top: 2px solid black;\">\r\n");
 			}
-			
+
 			output.append("</div>");
 			
 			return output.toString();
@@ -324,9 +324,10 @@ public class NavigationServlet extends HttpServlet {
 				+ "		<input class=\"single-row-input\" type=\"email\" name=\"receiver\" placeholder=\"Receiver\" required>\r\n"
 				+ "		<input class=\"single-row-input\" type=\"text\"  name=\"subject\" placeholder=\"Subject\" required>\r\n"
 				+ "		<textarea class=\"textarea-input\" name=\"body\" placeholder=\"Body\" wrap=\"hard\" required></textarea>\r\n"
-				+ "		<label for=\"digitalSignature\">Digital Signature</label><br>"
-				+ "		<input type=\"checkbox\" name=\"digitalSignature\" value=\"yes\">"
-				+ "		<input type=\"submit\" name=\"sent\" value=\"Send\">\r\n"
+				+ "		<div class='controls'><div class='signature'><input type=\"submit\" name=\"sent\" value=\"Send\">"
+                + "     <label for=\"digitalSignature\">Digital Signature</label>"
+				+ "		<input type=\"checkbox\" name=\"digitalSignature\" value=\"yes\"></div>"
+				+ "		</div>\r\n"
 				+ "	</form>";
 		}
 	
@@ -363,14 +364,12 @@ public class NavigationServlet extends HttpServlet {
 				_emailReceiver = StringEscapeUtils.escapeHtml4(_emailReceiver);
 				_timestamp = StringEscapeUtils.escapeHtml4(_timestamp);
 				
-				output.append("<div style=\"white-space: pre-wrap;\"><span style=\"color:grey;\">");
+				output.append("<div class='mail-sent'><span>");
 				output.append("TO:&emsp;" + _emailReceiver + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
 				output.append("<br><b>" + _subject + "</b>\r\n");
 				output.append("<br>" + _body);
 				output.append("</div>\r\n");
-				
-				output.append("<hr style=\"border-top: 2px solid black;\">\r\n");
 			}
 			
 			output.append("</div>");

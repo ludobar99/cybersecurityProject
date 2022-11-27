@@ -15,29 +15,23 @@
 </head>
 <body>
 	<nav class="navbar">
-	  <div class="box">
-	  	<div>
-			<img src="images/email_icon.jpg" align="left" />
-			<p>e-mail client
-				<%
-				
-				String email = (String) request.getAttribute("email");
-				 
-				 %>
-				<br>	${fn:escapeXml(email)} 
-				<!-- <br>	<c:out value="${email}" escapeXml=" true"/> -->
-			</p>
+	  	<div id="title">
+			<p>E-Mail Client</p>
 	  	</div>
 	  	<div id="right">
-	  	<form class="btn-group" action="LogoutServlet" method="post">
-			<input type="submit" name="logout" value="Logout">
-		</form>
+			<p>
+				<%
+					String email = (String) request.getAttribute("email");
+				%>
+				${fn:escapeXml(email)}
+			</p>
+			<form class="navbar-controls" action="LogoutServlet" method="post">
+				<input type="submit" name="logout" value="Logout">
+			</form>
 	  	</div>
-	  </div>
 	</nav>
 	
 	<div class="grid-container">
-		
 		<form class="btn-group" action="NavigationServlet" method="post">
 			<input type="hidden" name="email" value=<c:out value="${email}" escapeXml=" true"/>>
 			<input type="text" name="search"  placeholder="Search..." id="item">

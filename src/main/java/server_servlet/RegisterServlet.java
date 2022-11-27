@@ -77,10 +77,10 @@ public class RegisterServlet extends HttpServlet {
 		/*
 		 *  Validating fields
 		 */
-		if (!Validator.validateEmail(email) |
-				!Validator.validatePassword(pwd) |
-				!Validator.validateName(name)|
-				!Validator.validateName(surname)
+		if (!Validator.validateEmail(email)
+				| !Validator.validatePassword(pwd)
+				| !Validator.validateName(name)
+				| !Validator.validateName(surname)
 		) {
 				System.out.println("invalid field");
 				response.sendRedirect("register.html");
@@ -130,8 +130,9 @@ public class RegisterServlet extends HttpServlet {
 			 * on the "client side" and returns the public key.
 			 */
 			String sourcePath = getServletContext().getRealPath("/" );
+			Path rootPath = Paths.getRootPath(sourcePath);
 			User thisUser = new User(email);
-			PublicKey publickey = thisUser.createKeys(Paths.getRootPath(sourcePath).toString() + "/keys/" + email);
+			PublicKey publickey = thisUser.createKeys(rootPath.toString() + "/keys/" + email);
 			
 			/*
 			 * Encodes the publickey to a byte array to store it in the database.
@@ -139,7 +140,9 @@ public class RegisterServlet extends HttpServlet {
 			 */
 			byte[] publicKeyBytes = publickey.getEncoded();
 			
-			PreparedStatement statement2 = conn.prepareStatement("INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)");
+			PreparedStatement statement2 = conn.prepareStatement(
+					"INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)"
+			);
 			statement2.setString(1, name);
 			statement2.setString(2, surname);
 			statement2.setString(3, email);
