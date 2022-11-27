@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.commons.text.StringEscapeUtils;
+
+import database.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,19 +47,9 @@ public class LoginServlet extends HttpServlet {
     }
     
     public void init() throws ServletException {
-    	try {
-			Class.forName(DRIVER_CLASS);
-			
-		    Properties connectionProps = new Properties();
-		    connectionProps.put("user", USER);
-		    connectionProps.put("password", PWD);
-	
-	        conn = DriverManager.getConnection(DB_URL, connectionProps);
-		    
     	
-    	} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-		}
+    	conn = DBConnection.getInstance().getConn();
+   
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
