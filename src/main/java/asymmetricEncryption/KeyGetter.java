@@ -70,19 +70,11 @@ public class KeyGetter {
 	/*
 	 * Gets the key bytes saved in a file named after the user email.
 	 */
-	public static byte[] getPrivateKeyBytes(String email) throws IOException {
-		
-		// TODO: put relative path!!
-		String path = "/Users/ludo/cs_project/ExamProject/src/main/java/client/";
-		path += email;
-		
-		Path path1 = Paths.get(path);
-		
-		byte[] keyBytes = null;
-			
-		keyBytes = Files.readAllBytes(path1);
-		
-		return keyBytes;
+	public static byte[] getPrivateKeyBytes(String rootPath, String email) throws IOException {
+		String filePath = rootPath + "/keys/" + email;
+		Path path = Paths.get(filePath);
+
+		return Files.readAllBytes(path);
 	}
 
 }

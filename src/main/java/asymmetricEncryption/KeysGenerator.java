@@ -1,20 +1,9 @@
 package asymmetricEncryption;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.sql.SQLException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import java.security.*;
 /*
  * 
  * This class generates the public and private key of a user. Keys are generated on the client side.
@@ -65,71 +54,71 @@ public class KeysGenerator {
 		 * TODO: delete once finished
 		 * main method to test keys. It generates keys, encrypts and decrypts a text
 		 */
-		public static void main(String[] args) throws SQLException, InvalidKeySpecException, IOException, NoSuchAlgorithmException {
-			
-			KeysGenerator k = null;
-			
-			try {
-			
-				k = new KeysGenerator(1024);
-				k.createKeys();
-			
-			} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			/*
-			 * key pair
-			 */
-			PublicKey pubk = k.getPublicKey();
-			PrivateKey privk = k.getPrivateKey();
-			
-			String text = "Ciao, questo è un testo segreto!";
-			byte[] encryptedTest = null;
-			byte[] decryptedTest = null;
-			
-			
-			/*
-			 *  using public key from database.
-			 */
-			KeyGetter.init();
-			byte[] publickey = KeyGetter.getPublicKeyBytes("alice@ex.com");
-			
-			System.out.println("public key: " + pubk);
-			
-			try {
-				
-				PublicKey key = FromBytesToKeyConverter.getPublicKeyFromBytes(publickey);
-				encryptedTest = Encryptor.encrypt(text.getBytes(), key);
-			
-			} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException
-					| NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			System.out.println("Encrypted text: "+ encryptedTest);
-			
-			byte[] privateKey = KeyGetter.getPrivateKeyBytes("alice@ex.com");
-			
-			PrivateKey pKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKey);
-			System.out.println("private key: " + privk);
-			
-			try {
-				
-				decryptedTest = Decryptor.decrypt(encryptedTest, pKey);
-			
-			} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException
-					| NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String decrypted = new String(decryptedTest);
-			System.out.println(decrypted);
-			
-			
-		}
+//		public static void main(String[] args) throws SQLException, InvalidKeySpecException, IOException, NoSuchAlgorithmException {
+//
+//			KeysGenerator k = null;
+//
+//			try {
+//
+//				k = new KeysGenerator(1024);
+//				k.createKeys();
+//
+//			} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//
+//			/*
+//			 * key pair
+//			 */
+//			PublicKey pubk = k.getPublicKey();
+//			PrivateKey privk = k.getPrivateKey();
+//
+//			String text = "Ciao, questo è un testo segreto!";
+//			byte[] encryptedTest = null;
+//			byte[] decryptedTest = null;
+//
+//
+//			/*
+//			 *  using public key from database.
+//			 */
+//			KeyGetter.init();
+//			byte[] publickey = KeyGetter.getPublicKeyBytes("alice@ex.com");
+//
+//			System.out.println("public key: " + pubk);
+//
+//			try {
+//
+//				PublicKey key = FromBytesToKeyConverter.getPublicKeyFromBytes(publickey);
+//				encryptedTest = Encryptor.encrypt(text.getBytes(), key);
+//
+//			} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException
+//					| NoSuchAlgorithmException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//
+//			System.out.println("Encrypted text: "+ encryptedTest);
+//
+//			byte[] privateKey = KeyGetter.getPrivateKeyBytes("alice@ex.com");
+//
+//			PrivateKey pKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKey);
+//			System.out.println("private key: " + privk);
+//
+//			try {
+//
+//				decryptedTest = Decryptor.decrypt(encryptedTest, pKey);
+//
+//			} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException
+//					| NoSuchAlgorithmException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			String decrypted = new String(decryptedTest);
+//			System.out.println(decrypted);
+//
+//
+//		}
 		
 }
 	
