@@ -30,14 +30,7 @@ import util.Validator;
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	/*
-	 * TODO: environment variables
-	 */
-	private static final String USER = "sa";
-	private static final String PWD = "Strong.Pwd-123";
-	private static final String DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=examDB;encrypt=true;trustServerCertificate=true;";
-    
+
 	private static Connection conn;
 	
     /**
@@ -48,16 +41,9 @@ public class RegisterServlet extends HttpServlet {
     }
     
     public void init() throws ServletException {
-    	try {
-			Class.forName(DRIVER_CLASS);
-			
-		    Properties connectionProps = new Properties();
-		    connectionProps.put("user", USER);
-		    connectionProps.put("password", PWD);
-	
-	        conn = DriverManager.getConnection(DB_URL, connectionProps);
-		    
-		   
+
+    	conn = DBConnection.getInstance().getConn();
+
     	
     	} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
@@ -131,7 +117,7 @@ public class RegisterServlet extends HttpServlet {
 			 */
 			String sourcePath = getServletContext().getRealPath("/" );
 			Path rootPath = Paths.getRootPath(sourcePath);
-			User thisUser = new User(email);
+			User thisUser = new User(email, "a");
 			PublicKey publickey = thisUser.createKeys(rootPath.toString() + "/keys/" + email);
 			
 			/*

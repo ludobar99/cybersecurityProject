@@ -12,6 +12,10 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.commons.text.StringEscapeUtils;
+
+import client.User;
+import database.DBAPI;
+import database.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,15 +30,7 @@ import util.Validator;
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    
-	/*
-	 * TODO: environment variables
-	 */
-	private static final String USER = "sa";
-	private static final String PWD = "Strong.Pwd-123";
-	private static final String DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=examDB;encrypt=true;trustServerCertificate=true;";
-    
+     
 	private static Connection conn;
 	
 	/**
@@ -45,22 +41,13 @@ public class LoginServlet extends HttpServlet {
     }
     
     public void init() throws ServletException {
-    	try {
-			Class.forName(DRIVER_CLASS);
-			
-		    Properties connectionProps = new Properties();
-		    connectionProps.put("user", USER);
-		    connectionProps.put("password", PWD);
-	
-	        conn = DriverManager.getConnection(DB_URL, connectionProps);
-		    
     	
-    	} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-		}
+    	conn = DBConnection.getInstance().getConn();
+   
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		response.setContentType("text/html");
 		
 		String email = request.getParameter("email");
@@ -83,46 +70,49 @@ public class LoginServlet extends HttpServlet {
 		
 		try {
 
-			PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=?");
+			/*
+			 * getting user account
+			 */
+			User user = DBAPI.getAccount(email);
 			
-			statement.setString(1, email);
 			
-			ResultSet sqlRes = statement.executeQuery();
-			
-			if (sqlRes.next()) {
+			/*
+			 * no match was found for email address; user is null
+			 */
+			if (user == null) {
 				
-				String _email = sqlRes.getString(3);
-				String _password = sqlRes.getString(4);
-				
-				/*
-				 * checks the correctness of the password. It generates an hash from the password 
-				 * and compares it with the hash in the database
-				 * 
-				 */
-				if (!Hash.validatePassword(pwd, _password)) {
-					
-					System.out.println("Login failed!");
-					request.getRequestDispatcher("login.html").forward(request, response);
-				
-					return;
-				}
-				
-				/*
-				 *  if login was successful, the session is associated with the user email
-				 */
-				SessionManager.setSessionUser(request.getSession(), _email);
-				
-				request.setAttribute("email", _email);
-				
-				System.out.println("Login succeeded!");
-				request.setAttribute("content", "");
-				request.getRequestDispatcher("home.jsp").forward(request, response);
-				
-				
-			} else {
 				System.out.println("Login failed!");
 				request.getRequestDispatcher("login.html").forward(request, response);
+				
+				return;
 			}
+			
+			/*
+			 * checks the correctness of the password. It generates an hash from the password 
+			 * and compares it with the hash in the database
+			 * 
+			 */
+			if (!Hash.validatePassword(pwd, user.getPassword())) {
+				
+				System.out.println("Login failed!");
+				request.getRequestDispatcher("login.html").forward(request, response);
+			
+				return;
+			}
+				
+			/*
+			 *  if login was successful, the session is associated with the user email
+			 */
+			SessionManager.setSessionUser(request.getSession(), user.getEmail());
+			
+			request.setAttribute("email", user.getEmail());
+			
+			System.out.println("Login succeeded!");
+			
+			request.setAttribute("content", "");
+			request.getRequestDispatcher("home.jsp").forward(request, response);
+			
+			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
