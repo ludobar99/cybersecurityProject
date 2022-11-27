@@ -1,19 +1,92 @@
 @charset "ISO-8859-1";
 
-/* Navigation bar */
-.navbar {
-	color:#fff!important;
-	background-color:#000!important;
-  	overflow: hidden; /* Hide overflow */
+:root {
+    --background: #FDFDF5;
+    --primary-dark: #042100;
+    --primary-light: #B7F397;
+    --primary-light-text: #2F5324;
+    --surface-variant: #E0E5D7;
+    --surface-variant-text: #43483E;
+    --on-surface: #191C18;
+    --on-surface-text: #E4E5DD;
+
+    --space1: .5rem;
+    --space2: 1rem;
+    --space3: 1.5rem;
+
+    --round1: .5rem;
+    --round2: .75rem;
 }
 
-/* Navigation bar links */
+body {
+    font-size: 16px;
+    background-color: var(--background);
+    font-family: "system-ui","sans-serif";
+}
+
+#title {
+    font-weight: bold;
+}
+
+#right {
+    display: flex;
+    align-items: center;
+    gap: var(--space2);
+}
+
+#submitForm {
+    margin-top: var(--space1);
+    display: flex;
+    flex-flow: column;
+    align-items: stretch;
+    justify-content: start;
+    gap: var(--space1);
+}
+#submitForm > input,
+#submitForm > textarea {
+    all: unset;
+    border-radius: var(--round1);
+    background-color: var(--surface-variant);
+    color: var(--surface-variant-text);
+    padding: var(--space1);
+}
+#submitForm > .controls {
+    display: flex;
+    gap: var(--space1);
+}
+#submitForm > .signature {
+    display: flex;
+    gap: 3px;
+}
+.signature > input[type=submit] {
+    all: unset;
+    flex: 1 1 0%;
+    background-color: var(--on-surface);
+    border-radius: var(--round1);
+    color: var(--on-surface-text);
+    padding: var(--space2);
+    cursor: pointer;
+    font-weight: bold;
+    font-size: .875rem;
+}
+
+/* Navigation bar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: var(--space1) var(--space2) var(--space1) var(--space2);
+    border-radius: var(--round2);
+
+	color: #fff;
+	background-color: var(--primary-dark);
+    opacity: 90%;
+}
 .navbar a {
   	display: block; /* Change the display to block, for responsive reasons (see below) */
   	color: white; /* White text color */
 }
-
-/* Navigation bar images */
 .navbar img {
     max-width: 6%;
     max-height: 6%;
@@ -23,19 +96,28 @@
    	display: flex;
    	align-items:center;
 }
-
+.navbar-controls {
+    display: flex;
+}
 .btn-group {
-	border-right: 5px solid;
+    display: flex;
+    flex-flow: column;
+    justify-content: start;
+    gap: var(--space1);
+    margin-top: var(--space1);
+    margin-right: var(--space1);
 }
 
+.navbar-controls input,
 .btn-group input {
-  background-color: #04AA6D; /* Green background */
-  border: 1px solid green; /* Green border */
-  color: white; /* White text */
-  padding: 10px 24px; /* Some padding */
-  cursor: pointer; /* Pointer/hand icon */
-  width: 100%;
-  display: block; /* Make the buttons appear below each other */
+    all: unset;
+    background-color: var(--primary-light);
+    border-radius: var(--round1);
+    color: var(--primary-light-text); /* White text */
+    padding: var(--space2);
+    cursor: pointer; /* Pointer/hand icon */
+    font-weight: bold;
+    font-size: .875rem;
 }
 
 .single-row-input {
@@ -44,20 +126,6 @@
   cursor: pointer; /* Pointer/hand icon */
   width: 100%;
   display: block; /* Make the buttons appear below each other */
-}
-
-.textarea-input {
-	resize: none;
-  	border: 1px solid green; /* Green border */
-  	padding: 10px 24px; /* Some padding */
-  	cursor: pointer; /* Pointer/hand icon */
-  	width: 100%;
-  	height: 100%;
-  	display: block; /* Make the buttons appear below each other */
-}
-
-.btn-group button:not(:last-child) {
-  border-bottom: none; /* Prevent double borders */
 }
 
 /* Add a background color on hover */
@@ -71,9 +139,26 @@
   grid-template-rows: 100%;
 }
 
-.form-resize {
-	width: 95%;
-	height: 100%;
+.mail-sent {
+    border-radius: var(--round2);
+    background-color: var(--surface-variant);
+    color: var(--surface-variant-text);
+    padding: var(--space3);
+    overflow: hidden;
+    margin-top: var(--space1);
+}
+.mail-sent > span {
+    overflow-wrap: break-word;
+}
+
+.mail-inbox {
+    border-radius: var(--round2);
+    background-color: var(--surface-variant);
+    color: var(--surface-variant-text);
+    padding: var(--space3);
+    overflow: hidden;
+    margin-top: var(--space1);
+    height: min-content;
 }
 
 

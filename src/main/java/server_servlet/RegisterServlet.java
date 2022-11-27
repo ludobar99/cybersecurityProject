@@ -16,7 +16,6 @@ import java.util.Properties;
 import org.apache.commons.text.StringEscapeUtils;
 
 import client.User;
-import database.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +30,7 @@ import util.Validator;
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private static Connection conn;
 	
     /**
@@ -42,11 +41,19 @@ public class RegisterServlet extends HttpServlet {
     }
     
     public void init() throws ServletException {
+<<<<<<< HEAD
     	String sourcePath = getServletContext().getRealPath("/" );
 
     	conn = DBConnection.getInstance(sourcePath).getConn();
+=======
+
+    	conn = DBConnection.getInstance().getConn();
+>>>>>>> 7f939ff1d6ca913aeadd2f3529e62a0f0e5fbdd5
 
     	
+    	} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -62,10 +69,10 @@ public class RegisterServlet extends HttpServlet {
 		/*
 		 *  Validating fields
 		 */
-		if (!Validator.validateEmail(email) |
-				!Validator.validatePassword(pwd) |
-				!Validator.validateName(name)|
-				!Validator.validateName(surname)
+		if (!Validator.validateEmail(email)
+				| !Validator.validatePassword(pwd)
+				| !Validator.validateName(name)
+				| !Validator.validateName(surname)
 		) {
 				System.out.println("invalid field");
 				response.sendRedirect("register.html");
@@ -115,16 +122,24 @@ public class RegisterServlet extends HttpServlet {
 			 * on the "client side" and returns the public key.
 			 */
 			String sourcePath = getServletContext().getRealPath("/" );
+			Path rootPath = Paths.getRootPath(sourcePath);
 			User thisUser = new User(email, "a");
+<<<<<<< HEAD
 			PublicKey publickey = thisUser.createKeys(Paths.getRootPath(sourcePath).toString() + "/keys/" + email);
 
+=======
+			PublicKey publickey = thisUser.createKeys(rootPath.toString() + "/keys/" + email);
+			
+>>>>>>> 7f939ff1d6ca913aeadd2f3529e62a0f0e5fbdd5
 			/*
 			 * Encodes the publickey to a byte array to store it in the database.
 			 * TODO: save in bytes or save in a string?
 			 */
 			byte[] publicKeyBytes = publickey.getEncoded();
 			
-			PreparedStatement statement2 = conn.prepareStatement("INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)");
+			PreparedStatement statement2 = conn.prepareStatement(
+					"INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)"
+			);
 			statement2.setString(1, name);
 			statement2.setString(2, surname);
 			statement2.setString(3, email);

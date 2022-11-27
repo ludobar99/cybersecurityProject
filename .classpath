@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry including="**/*.java" kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
+		<attributes>
+			<attribute name="module" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="/Users/ludo/Desktop/apache-tomcat-10.0.13/lib/servlet-api.jar"/>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="target/ExamProject-0.1/WEB-INF/lib/commons-lang3-3.12.0.jar"/>
+	<classpathentry kind="lib" path="target/ExamProject-0.1/WEB-INF/lib/commons-text-1.10.0.jar"/>
+	<classpathentry kind="lib" path="target/ExamProject-0.1/WEB-INF/lib/jakarta.activation-2.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ExamProject-0.1/WEB-INF/lib/jakarta.el-api-4.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ExamProject-0.1/WEB-INF/lib/jakarta.servlet.jsp.jstl-api-2.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ExamProject-0.1/WEB-INF/lib/jakarta.servlet-api-5.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ExamProject-0.1/WEB-INF/lib/jakarta.xml.bind-api-3.0.0.jar"/>
+	<classpathentry kind="lib" path="target/ExamProject-0.1/WEB-INF/lib/mssql-jdbc-12.1.0.jre11-preview.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
