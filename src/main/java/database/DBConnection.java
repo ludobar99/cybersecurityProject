@@ -2,7 +2,6 @@ package database;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,14 +10,6 @@ import java.util.Properties;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class DBConnection {
-	
-	
-	
-	/*
-	 * TODO: initialize the object when loading the class?
-	 */
-	// public instance initialized when loading the class
-	//private static DBConnection connInstance = new DBConnection();
 	 
 	private static DBConnection connInstance;
 	public static Connection conn;

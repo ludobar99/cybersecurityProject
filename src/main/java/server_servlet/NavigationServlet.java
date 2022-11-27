@@ -55,7 +55,6 @@ public class NavigationServlet extends HttpServlet {
     public void init() throws ServletException {
     	
     	conn = DBConnection.getInstance().getConn();
-
     	
     }
 

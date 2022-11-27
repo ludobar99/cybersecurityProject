@@ -114,7 +114,7 @@ public class RegisterServlet extends HttpServlet {
 			 * on the "client side" and returns the public key.
 			 */
 			String sourcePath = getServletContext().getRealPath("/" );
-			User thisUser = new User(email);
+			User thisUser = new User(email, "a");
 			PublicKey publickey = thisUser.createKeys(Paths.getRootPath(sourcePath).toString() + "/keys/" + email);
 			
 			/*
