@@ -2,6 +2,7 @@ package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -20,6 +21,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import util.Hash;
+import util.Paths;
 import util.Validator;
 
 /**
@@ -63,7 +65,6 @@ public class RegisterServlet extends HttpServlet {
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("text/html");
 		
 		/*
 		 * The replacement escapes apostrophe special character in order to store it in SQL.
@@ -72,14 +73,17 @@ public class RegisterServlet extends HttpServlet {
 		String surname = request.getParameter("surname").replace("'", "''");
 		String email = request.getParameter("email").replace("'", "''");
 		String pwd = request.getParameter("password").replace("'", "''");
-		
-		
+
 		/*
 		 *  Validating fields
 		 */
-		if (!Validator.validateEmail(email) | !Validator.validatePassword(pwd) | !Validator.validateName(name)| !Validator.validateName(surname)) {
+		if (!Validator.validateEmail(email) |
+				!Validator.validatePassword(pwd) |
+				!Validator.validateName(name)|
+				!Validator.validateName(surname)
+		) {
 				System.out.println("invalid field");
-				request.getRequestDispatcher("register.html").forward(request, response);
+				response.sendRedirect("register.html");
 				return;
 		}
 		
@@ -107,11 +111,8 @@ public class RegisterServlet extends HttpServlet {
 		
 		
 		try {
-			
 			PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=?");
-			
 			statement.setString(1, email);
-			
 			ResultSet sqlRes = statement.executeQuery();
 			
 			/*
@@ -119,23 +120,18 @@ public class RegisterServlet extends HttpServlet {
 			 * TODO: unique_key / primary_key database
 			 */
 			if (sqlRes.next()) {
-				
 				System.out.println("Email already registered!");
-				request.getRequestDispatcher("register.html").forward(request, response);
+				response.sendRedirect("register.html");
 				return;
-				
-			} 
-		
-			User thisUser = new User(email);
+			}
 			
 			/*
 			 * Generates user's keypair (public and private key). It writes the private key in a file
-			 * on the client side and  returns the public key.
-			 * 
-			 * TODO: make it clear
-			 * TODO: move keys generation on client side
+			 * on the "client side" and returns the public key.
 			 */
-			PublicKey publickey = thisUser.createKeys(email);
+			String sourcePath = getServletContext().getRealPath("/" );
+			User thisUser = new User(email);
+			PublicKey publickey = thisUser.createKeys(Paths.getRootPath(sourcePath).toString() + "/keys/" + email);
 			
 			/*
 			 * Encodes the publickey to a byte array to store it in the database.
@@ -144,32 +140,24 @@ public class RegisterServlet extends HttpServlet {
 			byte[] publicKeyBytes = publickey.getEncoded();
 			
 			PreparedStatement statement2 = conn.prepareStatement("INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)");
-	
 			statement2.setString(1, name);
 			statement2.setString(2, surname);
 			statement2.setString(3, email);
 			statement2.setString(4, password);	
-			statement2.setBytes(5, publicKeyBytes);	
-			
+			statement2.setBytes(5, publicKeyBytes);
 			statement2.execute();
-					
-			request.setAttribute("email", email);
-			request.setAttribute("password", pwd);
-				
-			System.out.println("Registration succeeded!");
-					
+
 			/*
-			 *  After registration, logs in via Login Servlet
-			 *  TODO: re-do login.
+			 *  After registration, redirects to login
 			 */
-			
-			request.getRequestDispatcher("LoginServlet").forward(request, response);
-			
-			
-			
+			System.out.println("Registration succeeded!");
+			response.sendRedirect("login.html");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			request.getRequestDispatcher("register.html").forward(request, response);
+			response.sendRedirect("register.html");
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect("register.html");
 		}
 	}
 

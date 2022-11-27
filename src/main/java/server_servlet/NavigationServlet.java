@@ -2,6 +2,7 @@ package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -19,6 +20,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.text.StringEscapeUtils;
 
 import asymmetricEncryption.Decryptor;
@@ -29,6 +31,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import util.Paths;
 import util.SessionManager;
 import util.Validator;
 
@@ -75,22 +78,14 @@ public class NavigationServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
-		
-		
-		String email = request.getParameter("email").replace("'", "''");		
-		
-		/*
-		 * if the email of the session and the email in the request are different, the user is redirected to login.html
-		 * TODO: fix with digital signature
-		 * vedere come sono gestite le sessioni HTTP su java
-		 */
-		
-		if (SessionManager.getSessionUser(request.getSession(false)).compareTo(email) != 0) {
-		
-			request.getRequestDispatcher("login.html").forward(request, response);
+
+		// Session check
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.sendRedirect("login.html");
 			return;
-		
-		} 
+		}
+		String email = SessionManager.getSessionUser(session);
 		
 		/*
 		 * validating email
@@ -140,16 +135,12 @@ public class NavigationServlet extends HttpServlet {
 	private String getHtmlForInbox(String email) {
 		
 		try {
-			
 			PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE receiver=? ORDER BY [time] DESC");
-			
 			statement.setString(1, email);
-			
 			ResultSet sqlRes = statement.executeQuery();
 			
 			StringBuilder output = new StringBuilder();
-			
-			
+
 			while (sqlRes.next()) {
 				String _emailSender = sqlRes.getString(1);
 				byte[] _encryptedSubject = sqlRes.getBytes(3);
@@ -169,10 +160,13 @@ public class NavigationServlet extends HttpServlet {
 				 */
 				KeyGetter.init();
 				
-				byte[] privateKeybytes = null;
+				byte[] privateKeyBytes = null;
 				
 				try {
-					privateKeybytes = KeyGetter.getPrivateKeyBytes(email);
+					String sourcePath = getServletContext().getRealPath("/");
+					Path rootPath = Paths.getRootPath(sourcePath);
+
+					privateKeyBytes = KeyGetter.getPrivateKeyBytes(rootPath.toString(), email);
 				} catch (IOException e1) {
 
 					e1.printStackTrace();
@@ -180,7 +174,7 @@ public class NavigationServlet extends HttpServlet {
 				
 				PrivateKey privateKey = null;
 				try {
-					privateKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKeybytes);
+					privateKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKeyBytes);
 				} catch (InvalidKeySpecException | NoSuchAlgorithmException e1) {
 
 					e1.printStackTrace();

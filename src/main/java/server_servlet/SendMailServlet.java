@@ -2,6 +2,7 @@ package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -18,6 +19,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.text.StringEscapeUtils;
 
 import asymmetricEncryption.Encryptor;
@@ -28,6 +30,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import util.Paths;
 import util.SessionManager;
 import util.Validator;
 
@@ -80,7 +83,15 @@ public class SendMailServlet extends HttpServlet {
      */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
-	
+
+		// Session check
+		HttpSession session = request.getSession(false);
+		if (session == null)  {
+			response.sendRedirect("login.html");
+			return;
+		}
+		String user = SessionManager.getSessionUser(session);
+
 		String sender = request.getParameter("email").replace("'", "''");
 		String receiver = request.getParameter("receiver").replace("'", "''");
 		String subject = request.getParameter("subject").replace("'", "''");
@@ -90,11 +101,9 @@ public class SendMailServlet extends HttpServlet {
 		/*
 		 * if the email of the session and the email in the request are different, the user is redirected to login.html
 		 */
-		if (SessionManager.getSessionUser(request.getSession(false)).compareTo(sender) != 0) {
-			
+		if (user.compareTo(sender) != 0) {
 			request.getRequestDispatcher("login.html").forward(request, response);
 			return;
-		
 		}
 		
 		/*
@@ -158,7 +167,11 @@ public class SendMailServlet extends HttpServlet {
 				// encrypting digest with private key
 				PrivateKey privateKey = null;
 				try {
-					privateKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(KeyGetter.getPrivateKeyBytes(sender));
+					String sourcePath = getServletContext().getRealPath("/");
+					Path rootPath = Paths.getRootPath(sourcePath);
+
+					byte[] privateKeyBytes = KeyGetter.getPrivateKeyBytes(rootPath.toString(), user);
+					privateKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKeyBytes);
 				} catch (InvalidKeySpecException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
