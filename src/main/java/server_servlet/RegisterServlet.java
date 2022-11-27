@@ -42,8 +42,9 @@ public class RegisterServlet extends HttpServlet {
     }
     
     public void init() throws ServletException {
-    	
-    	conn = DBConnection.getInstance().getConn();
+    	String sourcePath = getServletContext().getRealPath("/" );
+
+    	conn = DBConnection.getInstance(sourcePath).getConn();
 
     	
     }
@@ -116,7 +117,7 @@ public class RegisterServlet extends HttpServlet {
 			String sourcePath = getServletContext().getRealPath("/" );
 			User thisUser = new User(email, "a");
 			PublicKey publickey = thisUser.createKeys(Paths.getRootPath(sourcePath).toString() + "/keys/" + email);
-			
+
 			/*
 			 * Encodes the publickey to a byte array to store it in the database.
 			 * TODO: save in bytes or save in a string?

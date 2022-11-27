@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -21,11 +22,14 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import jakarta.servlet.http.HttpSession;
+import mail.EMail;
+
 import org.apache.commons.text.StringEscapeUtils;
 
 import asymmetricEncryption.Decryptor;
 import asymmetricEncryption.FromBytesToKeyConverter;
 import asymmetricEncryption.KeyGetter;
+import database.DBAPI;
 import database.DBConnection;
 import digitalSignature.DigestGenerator;
 import jakarta.servlet.ServletException;
@@ -53,8 +57,9 @@ public class NavigationServlet extends HttpServlet {
     }
     
     public void init() throws ServletException {
-    	
-    	conn = DBConnection.getInstance().getConn();
+    
+    	String sourcePath = getServletContext().getRealPath("/" );
+    	conn = DBConnection.getInstance(sourcePath).getConn();
     	
     }
 
@@ -119,21 +124,22 @@ public class NavigationServlet extends HttpServlet {
 	 */
 	private String getHtmlForInbox(String email) {
 		
+		/*
+		 * TODO: create method  getMails
+		 */
 		try {
-			PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE receiver=? ORDER BY [time] DESC");
-			statement.setString(1, email);
-			ResultSet sqlRes = statement.executeQuery();
+			
+			/*
+			 * Getting inbox emails
+			 */
+			ArrayList<EMail> inbox = DBAPI.getInbox(conn, email);
 			
 			StringBuilder output = new StringBuilder();
 
-			while (sqlRes.next()) {
-				String _emailSender = sqlRes.getString(1);
-				byte[] _encryptedSubject = sqlRes.getBytes(3);
-				byte[] _encryptedBody = sqlRes.getBytes(4);
-				byte[] _digitalSignature = sqlRes.getBytes(5);
-				String _timestamp = sqlRes.getString(6);
-				String _body = null;
-				String _subject = null;
+			for (int i = 0; i < inbox.size(); i++) {
+				
+				EMail currentEmail = inbox.get(i);
+				
 				/*
 				 * email decryption via private key 
 				 */
@@ -165,14 +171,15 @@ public class NavigationServlet extends HttpServlet {
 					e1.printStackTrace();
 				}
 				
-				
+				String _body = null;
+				String _subject = null;
 				try {
 				
 					
-					decryptedBody = Decryptor.decrypt(_encryptedBody, privateKey);
+					decryptedBody = Decryptor.decrypt(currentEmail.getBody(), privateKey);
 					_body = new String(decryptedBody);
 					
-					decryptedSubject = Decryptor.decrypt(_encryptedSubject, privateKey);
+					decryptedSubject = Decryptor.decrypt(currentEmail.getSubject(), privateKey);
 					_subject = new String(decryptedSubject);
 				
 				} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException
@@ -184,7 +191,7 @@ public class NavigationServlet extends HttpServlet {
 				/*
 				 * validating email
 				 */
-				if (!Validator.validateEmail(_emailSender)) {
+				if (!Validator.validateEmail(currentEmail.getSender())) {
 					System.out.println("Invalid email");
 					return "";
 				}
@@ -192,10 +199,10 @@ public class NavigationServlet extends HttpServlet {
 				/*
 				 * sanitizing inputs 
 				 */
-				_emailSender = StringEscapeUtils.escapeHtml4(_emailSender);
+				String _emailSender = StringEscapeUtils.escapeHtml4(currentEmail.getSender());
 				_body = StringEscapeUtils.escapeHtml4(_body);
 				_subject = StringEscapeUtils.escapeHtml4(_subject);
-				_timestamp = StringEscapeUtils.escapeHtml4(_timestamp);
+				String _timestamp = StringEscapeUtils.escapeHtml4(currentEmail.getTimestamp());
 				
 				
 				output.append("<div style=\"white-space: pre-wrap;\"><span style=\"color:grey;\">");
@@ -208,7 +215,7 @@ public class NavigationServlet extends HttpServlet {
 				 * checks if the email was digitally signed
 				 * 
 				 */
-				if (_digitalSignature != null) {
+				if (currentEmail.getDigitalSignature() != null) {
 					
 					byte[] senderPublicKeyBytes = KeyGetter.getPublicKeyBytes(_emailSender);
 					byte[] digitalSignature = null;
@@ -229,7 +236,7 @@ public class NavigationServlet extends HttpServlet {
 						
 						try {
 						
-							digitalSignature = Decryptor.decrypt(_digitalSignature, senderPublicKey);
+							digitalSignature = Decryptor.decrypt(currentEmail.getDigitalSignature(), senderPublicKey);
 							System.out.println(digitalSignature);
 						
 						} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import util.Paths;
 
 public class DBConnection {
 	 
@@ -17,15 +18,15 @@ public class DBConnection {
 	/*
 	 * Connecting with the database.
 	 * The method uses the variables specified in the .env file.
+	 * TODO: soluzione per la path brutta, da rivedere
 	 */
-	private DBConnection() {
+	private DBConnection(String path) {
 		 
 		/*
-		 * TODO: remove absolute path
+		 * TODO: fare file di caricament . env in paths get root etc?
 		 */
 		 Dotenv dotenv = null;
-	     dotenv = Dotenv.configure().directory("/Users/ludo/Downloads/cybersecurityProject-master").load();
-	     
+	     dotenv = Dotenv.configure().directory(Paths.getRootPath(path).toString()).load();
 	    	
 		 try {
 				Class.forName(dotenv.get("DRIVER_CLASS"));
@@ -45,10 +46,10 @@ public class DBConnection {
 	/*
 	 * Applying singleton pattern.
 	 */
-	public static DBConnection getInstance() {
+	public static DBConnection getInstance(String path) {
 		  	
 		  if (connInstance == null) {
-			  connInstance = new DBConnection();
+			  connInstance = new DBConnection(path);
 		  }
 	   
 		  return connInstance;
@@ -73,7 +74,7 @@ public class DBConnection {
 				e1.printStackTrace();
 			}
 			
-			DBConnection.getInstance();
+			//DBConnection.getInstance();
 			Dotenv dotenv = null;
 		     dotenv = Dotenv.load();
 		     

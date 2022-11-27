@@ -53,8 +53,9 @@ public class SendMailServlet extends HttpServlet {
     }
     
     public void init() throws ServletException {
-   
-    	conn = DBConnection.getInstance().getConn();
+    	String sourcePath = getServletContext().getRealPath("/" );
+
+    	conn = DBConnection.getInstance(sourcePath).getConn();
     	
     }
 
