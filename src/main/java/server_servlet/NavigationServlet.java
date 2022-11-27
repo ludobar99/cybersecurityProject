@@ -309,7 +309,7 @@ public class NavigationServlet extends HttpServlet {
 				+ "		<input class=\"single-row-input\" type=\"email\" name=\"receiver\" placeholder=\"Receiver\" required>\r\n"
 				+ "		<input class=\"single-row-input\" type=\"text\"  name=\"subject\" placeholder=\"Subject\" required>\r\n"
 				+ "		<textarea class=\"textarea-input\" name=\"body\" placeholder=\"Body\" wrap=\"hard\" rows='10' required></textarea>\r\n"
-				+ "		<div class='controls'><div class='signature'><input type=\"submit\" name=\"sent\" value=\"Send\">"
+				+ "		<div class='controls'><input type=\"submit\" name=\"sent\" value=\"Send\"><div class='signature'>"
                 + "     <label for=\"digitalSignature\">Digital Signature</label>"
 				+ "		<input type=\"checkbox\" name=\"digitalSignature\" value=\"yes\"></div>"
 				+ "		</div>\r\n"
