@@ -16,6 +16,7 @@ import java.util.Properties;
 import org.apache.commons.text.StringEscapeUtils;
 
 import client.User;
+import database.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,14 +31,7 @@ import util.Validator;
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	/*
-	 * TODO: environment variables
-	 */
-	private static final String USER = "sa";
-	private static final String PWD = "Strong.Pwd-123";
-	private static final String DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=examDB;encrypt=true;trustServerCertificate=true;";
-    
+	
 	private static Connection conn;
 	
     /**
@@ -48,20 +42,10 @@ public class RegisterServlet extends HttpServlet {
     }
     
     public void init() throws ServletException {
-    	try {
-			Class.forName(DRIVER_CLASS);
-			
-		    Properties connectionProps = new Properties();
-		    connectionProps.put("user", USER);
-		    connectionProps.put("password", PWD);
-	
-	        conn = DriverManager.getConnection(DB_URL, connectionProps);
-		    
-		   
     	
-    	} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
-		}
+    	conn = DBConnection.getInstance().getConn();
+
+    	
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

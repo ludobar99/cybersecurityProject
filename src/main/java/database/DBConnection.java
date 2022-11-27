@@ -1,5 +1,8 @@
 package database;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -25,16 +28,20 @@ public class DBConnection {
 	 * The method uses the variables specified in the .env file.
 	 */
 	private DBConnection() {
-		
+		 
+		/*
+		 * TODO: remove absolute path
+		 */
 		 Dotenv dotenv = null;
-	     dotenv = Dotenv.configure().load();
+	     dotenv = Dotenv.configure().directory("/Users/ludo/Downloads/cybersecurityProject-master").load();
+	     
 	    	
 		 try {
 				Class.forName(dotenv.get("DRIVER_CLASS"));
 				
 			    Properties connectionProps = new Properties();
 			    connectionProps.put("user", dotenv.get("DB_USER"));
-			    connectionProps.put("password", dotenv.get("PWD"));
+			    connectionProps.put("password", dotenv.get("SA_PASSWORD"));
 		
 		        conn = DriverManager.getConnection(dotenv.get("DB_URL"), connectionProps);
 			    
@@ -67,6 +74,13 @@ public class DBConnection {
 	 
 
 		public static void main(String[] args) {
+			try {
+				String path = new File(".").getCanonicalPath();
+				System.out.println(path);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			DBConnection.getInstance();
 			Dotenv dotenv = null;
@@ -78,7 +92,7 @@ public class DBConnection {
 					
 				    Properties connectionProps = new Properties();
 				    connectionProps.put("user", dotenv.get("DB_USER"));
-				    connectionProps.put("password", dotenv.get("PWD"));
+				    connectionProps.put("password", dotenv.get("SA_PASSWORD"));
 			
 			        conn = DriverManager.getConnection(dotenv.get("DB_URL"), connectionProps);
 				    System.out.println("CONN "+conn);
