@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="cybersecurityProject:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>cybersecurityProject</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="ExamProject-0.1.war">
+      <element id="artifact" artifact-name="cybersecurityProject:war exploded" />
+    </root>
+  </artifact>
+</component>
