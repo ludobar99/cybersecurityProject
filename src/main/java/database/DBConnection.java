@@ -20,13 +20,14 @@ public class DBConnection {
 	 * The method uses the variables specified in the .env file.
 	 * TODO: soluzione per la path brutta, da rivedere
 	 */
-	private DBConnection(String path) {
+	private DBConnection() {
 		 
 		/*
 		 * TODO: fare file di caricament . env in paths get root etc?
 		 */
+		
 		 Dotenv dotenv = null;
-	     dotenv = Dotenv.configure().directory(Paths.getRootPath(path).toString()).load();
+	     dotenv = Dotenv.configure().directory("/Users/ludo/Downloads/cybersecurityProject-master/").load();
 	    	
 		 try {
 				Class.forName(dotenv.get("DRIVER_CLASS"));
@@ -46,10 +47,10 @@ public class DBConnection {
 	/*
 	 * Applying singleton pattern.
 	 */
-	public static DBConnection getInstance(String path) {
+	public static DBConnection getInstance() {
 		  	
 		  if (connInstance == null) {
-			  connInstance = new DBConnection(path);
+			  connInstance = new DBConnection();
 		  }
 	   
 		  return connInstance;
@@ -66,13 +67,6 @@ public class DBConnection {
 	 
 
 		public static void main(String[] args) {
-			try {
-				String path = new File(".").getCanonicalPath();
-				System.out.println(path);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			
 			//DBConnection.getInstance();
 			Dotenv dotenv = null;

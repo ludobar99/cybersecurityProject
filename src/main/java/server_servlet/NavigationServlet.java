@@ -59,7 +59,7 @@ public class NavigationServlet extends HttpServlet {
     public void init() throws ServletException {
     
     	String sourcePath = getServletContext().getRealPath("/" );
-    	conn = DBConnection.getInstance(sourcePath).getConn();
+    	conn = DBConnection.getInstance().getConn();
     	
     }
 
@@ -136,23 +136,22 @@ public class NavigationServlet extends HttpServlet {
 			
 			StringBuilder output = new StringBuilder();
 
-<<<<<<< HEAD
+			//Container
+			output.append("<div class='mail-inbox-container'>");
+		 
 			for (int i = 0; i < inbox.size(); i++) {
 				
 				EMail currentEmail = inbox.get(i);
-				
-=======
-            // Container
-			output.append("<div class='mail-inbox-container'>");
-			while (sqlRes.next()) {
-				String _emailSender = sqlRes.getString(1);
-				byte[] _encryptedSubject = sqlRes.getBytes(3);
-				byte[] _encryptedBody = sqlRes.getBytes(4);
-				byte[] _digitalSignature = sqlRes.getBytes(5);
-				String _timestamp = sqlRes.getString(6);
+				            
+			
+				String _emailSender = currentEmail.getSender();
+				byte[] _encryptedSubject = currentEmail.getSubject();
+				byte[] _encryptedBody = currentEmail.getBody();
+				byte[] _digitalSignature = currentEmail.getDigitalSignature();
+				String _timestamp;
 				String _body = null;
 				String _subject = null;
->>>>>>> 7f939ff1d6ca913aeadd2f3529e62a0f0e5fbdd5
+
 				/*
 				 * email decryption via private key 
 				 */
@@ -167,10 +166,12 @@ public class NavigationServlet extends HttpServlet {
 				byte[] privateKeyBytes = null;
 				
 				try {
+			
 					String sourcePath = getServletContext().getRealPath("/");
 					Path rootPath = Paths.getRootPath(sourcePath);
 
 					privateKeyBytes = KeyGetter.getPrivateKeyBytes(rootPath.toString(), email);
+				
 				} catch (IOException e1) {
 
 					e1.printStackTrace();
@@ -184,8 +185,6 @@ public class NavigationServlet extends HttpServlet {
 					e1.printStackTrace();
 				}
 				
-				String _body = null;
-				String _subject = null;
 				try {
 				
 					
@@ -204,7 +203,7 @@ public class NavigationServlet extends HttpServlet {
 				/*
 				 * validating email
 				 */
-				if (!Validator.validateEmail(currentEmail.getSender())) {
+				if (!Validator.validateEmail(_emailSender)) {
 					System.out.println("Invalid email");
 					return "";
 				}
@@ -212,10 +211,10 @@ public class NavigationServlet extends HttpServlet {
 				/*
 				 * sanitizing inputs 
 				 */
-				String _emailSender = StringEscapeUtils.escapeHtml4(currentEmail.getSender());
+				_emailSender = StringEscapeUtils.escapeHtml4(_emailSender);
 				_body = StringEscapeUtils.escapeHtml4(_body);
 				_subject = StringEscapeUtils.escapeHtml4(_subject);
-				String _timestamp = StringEscapeUtils.escapeHtml4(currentEmail.getTimestamp());
+				_timestamp = StringEscapeUtils.escapeHtml4(currentEmail.getTimestamp());
 				
 				
 				output.append("<div class='mail-inbox'><span>");

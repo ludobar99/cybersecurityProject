@@ -41,8 +41,8 @@ public class LoginServlet extends HttpServlet {
     }
     
     public void init() throws ServletException {
-    	String sourcePath = getServletContext().getRealPath("/" );
-    	conn = DBConnection.getInstance(sourcePath).getConn();
+
+    	conn = DBConnection.getInstance().getConn();
    
     }
 
