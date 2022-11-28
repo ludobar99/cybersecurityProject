@@ -16,6 +16,7 @@ import java.util.Properties;
 import org.apache.commons.text.StringEscapeUtils;
 
 import client.User;
+import database.DBAPI;
 import database.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -94,15 +95,8 @@ public class RegisterServlet extends HttpServlet {
 		
 		
 		try {
-			PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=?");
-			statement.setString(1, email);
-			ResultSet sqlRes = statement.executeQuery();
 			
-			/*
-			 * Only one account per email can be created
-			 * TODO: unique_key / primary_key database
-			 */
-			if (sqlRes.next()) {
+			if (DBAPI.checkIfUserExists(conn, email)) {
 				System.out.println("Email already registered!");
 				response.sendRedirect("register.html");
 				return;
@@ -124,16 +118,8 @@ public class RegisterServlet extends HttpServlet {
 			 */
 			byte[] publicKeyBytes = publickey.getEncoded();
 			
-			PreparedStatement statement2 = conn.prepareStatement(
-					"INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)"
-			);
-			statement2.setString(1, name);
-			statement2.setString(2, surname);
-			statement2.setString(3, email);
-			statement2.setString(4, password);	
-			statement2.setBytes(5, publicKeyBytes);
-			statement2.execute();
-
+			DBAPI.registerUser(conn, name, surname, email, password, publicKeyBytes);
+			
 			/*
 			 *  After registration, redirects to login
 			 */

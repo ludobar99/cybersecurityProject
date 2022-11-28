@@ -85,6 +85,9 @@ public class DBAPI {
 		
 	}
 
+	/*
+	 * Sending email aka saving it in the database.
+	 */
 	public static void sendEmail(Connection conn, String sender, String receiver, byte[] encryptedSubject, byte[] encryptedBody, byte[] encryptedDigest, String timestamp) throws SQLException {
 		
 		PreparedStatement statement = conn.prepareStatement("INSERT INTO mail ( sender, receiver, subject, body, digitalSignature, [time] ) VALUES ( ?, ?, ?, ?, ?, ?)");
@@ -102,6 +105,45 @@ public class DBAPI {
 	}
 	
 	/*
-	 * Sending email aka saving it in the database.
+	 * Checks if the user exists
 	 */
+	public static boolean checkIfUserExists(Connection conn, String email) throws SQLException {
+		
+		PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=?");
+		statement.setString(1, email);
+		ResultSet sqlRes = statement.executeQuery();
+		
+		/*
+		 * Only one account per email can be created
+		 * TODO: unique_key / primary_key database
+		 */
+		if (sqlRes.next()) {
+			return true;
+		} 
+			
+		return false;
+
+		
+	}
+
+	/*
+	 * Registers new user. Saves data in the database
+	 */
+	public static void registerUser(Connection conn, String name, String surname, String email, String password, byte[] publicKeyBytes) throws SQLException {
+		PreparedStatement statement2 = conn.prepareStatement(
+				"INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)"
+		);
+		statement2.setString(1, name);
+		statement2.setString(2, surname);
+		statement2.setString(3, email);
+		statement2.setString(4, password);	
+		statement2.setBytes(5, publicKeyBytes);
+		statement2.execute();
+
+		
+	}
+	
 }
+	
+	
+
