@@ -64,7 +64,7 @@ public class DBAPI {
 	/*
 	 *  Gets user sent emails.
 	 */
-	public static ArrayList<EMail> getInbox(Connection conn, String receiverEmail) throws SQLException {
+	public static ArrayList<EMail> sendEmail(Connection conn, String receiverEmail) throws SQLException {
 		
 		PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE receiver=? ORDER BY [time] DESC");
 		
@@ -84,4 +84,24 @@ public class DBAPI {
 		return inbox;
 		
 	}
+
+	public static void sendEmail(Connection conn, String sender, String receiver, byte[] encryptedSubject, byte[] encryptedBody, byte[] encryptedDigest, String timestamp) throws SQLException {
+		
+		PreparedStatement statement = conn.prepareStatement("INSERT INTO mail ( sender, receiver, subject, body, digitalSignature, [time] ) VALUES ( ?, ?, ?, ?, ?, ?)");
+		
+		statement.setString(1, sender);
+		statement.setString(2, receiver);
+		statement.setBytes(3, encryptedSubject);
+		statement.setBytes(4, encryptedBody);
+		statement.setBytes(5, encryptedDigest);
+		statement.setString(6, timestamp);
+		
+		
+		statement.execute();
+		
+	}
+	
+	/*
+	 * Sending email aka saving it in the database.
+	 */
 }

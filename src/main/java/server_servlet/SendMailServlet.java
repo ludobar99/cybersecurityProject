@@ -25,6 +25,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import asymmetricEncryption.Encryptor;
 import asymmetricEncryption.FromBytesToKeyConverter;
 import asymmetricEncryption.KeyGetter;
+import database.DBAPI;
 import database.DBConnection;
 import digitalSignature.DigestGenerator;
 import jakarta.servlet.ServletException;
@@ -195,18 +196,8 @@ public class SendMailServlet extends HttpServlet {
 		 * TODO: add digest (but before move that code on the client side)
 		 */
 		try {
-			
-			PreparedStatement statement = conn.prepareStatement("INSERT INTO mail ( sender, receiver, subject, body, digitalSignature, [time] ) VALUES ( ?, ?, ?, ?, ?, ?)");
-			
-			statement.setString(1, sender);
-			statement.setString(2, receiver);
-			statement.setBytes(3, encryptedSubject);
-			statement.setBytes(4, encryptedBody);
-			statement.setBytes(5, encryptedDigest);
-			statement.setString(6, timestamp);
-			
-			
-			statement.execute();
+				
+			DBAPI.sendEmail(conn, sender, receiver, encryptedSubject, encryptedBody, encryptedDigest, timestamp);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
