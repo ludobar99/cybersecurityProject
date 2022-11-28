@@ -10,7 +10,6 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,7 +57,6 @@ public class NavigationServlet extends HttpServlet {
     
     public void init() throws ServletException {
     
-    	String sourcePath = getServletContext().getRealPath("/" );
     	conn = DBConnection.getInstance().getConn();
     	
     }
@@ -336,21 +334,21 @@ public class NavigationServlet extends HttpServlet {
 	private String getHtmlForSent(String email) {
 		try {
 			
-			PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE sender=? ORDER BY [time] DESC");
-			
-			statement.setString(1, email);
-			
-			ResultSet sqlRes = statement.executeQuery();
-			
+			/*
+			 * Getting sent emails
+			 */
+			ArrayList<EMail> sentEmail = DBAPI.getInbox(conn, email);
 			
 			StringBuilder output = new StringBuilder();
+
 			output.append("<div>\r\n");
 			
-			while (sqlRes.next()) {
-				String _emailReceiver = sqlRes.getString(2);
-				byte[] _subject = sqlRes.getBytes(3);
-				byte[] _body = sqlRes.getBytes(4);
-				String _timestamp = sqlRes.getString(5);
+			for (int i = 0; i < sentEmail.size(); i++) {
+				
+				String _emailReceiver = sentEmail.get(i).getReceiver();
+				byte[] _subject = sentEmail.get(i).getSubject();
+				byte[] _body = sentEmail.get(i).getBody();
+				String _timestamp = sentEmail.get(i).getTimestamp();
 				
 				/*
 				 * Validating receiver's email

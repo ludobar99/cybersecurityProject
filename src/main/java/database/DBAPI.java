@@ -42,6 +42,30 @@ public class DBAPI {
 	 */
 	public static ArrayList<EMail> getInbox(Connection conn, String receiverEmail) throws SQLException {
 		
+		PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE sender=? ORDER BY [time] DESC");
+		
+		statement.setString(1, receiverEmail);
+		
+		ResultSet sqlRes = statement.executeQuery();
+		
+		ArrayList<EMail> inbox = new ArrayList<EMail>();
+		
+		while (sqlRes.next()) {
+			
+			EMail email = new EMail(sqlRes.getString(1), receiverEmail, sqlRes.getBytes(3), sqlRes.getBytes(4), sqlRes.getBytes(5), sqlRes.getString(6));
+			
+			inbox.add(email);
+		
+		}
+		return inbox;
+		
+	}
+	
+	/*
+	 *  Gets user sent emails.
+	 */
+	public static ArrayList<EMail> getInbox(Connection conn, String receiverEmail) throws SQLException {
+		
 		PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE receiver=? ORDER BY [time] DESC");
 		
 		statement.setString(1, receiverEmail);
