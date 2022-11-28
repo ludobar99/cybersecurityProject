@@ -225,7 +225,7 @@ public class NavigationServlet extends HttpServlet {
 				 * checks if the email was digitally signed
 				 * 
 				 */
-				if (currentEmail.getDigitalSignature() != null) {
+				if (currentEmail.getDigitalSignature() != null && _body != null) {
 					
 					byte[] senderPublicKeyBytes = KeyGetter.getPublicKeyBytes(_emailSender);
 					byte[] digitalSignature = null;
@@ -261,6 +261,7 @@ public class NavigationServlet extends HttpServlet {
 						byte[] digest = null;
 						
 						try {
+							
 							digest = DigestGenerator.generateDigest(_body);
 						
 						} catch (NoSuchAlgorithmException e) {
