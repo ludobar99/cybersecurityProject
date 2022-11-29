@@ -153,14 +153,12 @@ public class SendMailServlet extends HttpServlet {
 					byte[] privateKeyBytes = KeyGetter.getPrivateKeyBytes(rootPath.toString(), user);
 					privateKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKeyBytes);
 				} catch (InvalidKeySpecException | IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				encryptedDigest = Encryptor.encrypt(digest, privateKey);
 				
 			
 			} catch (NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e2) {
-				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
 		}
@@ -173,7 +171,6 @@ public class SendMailServlet extends HttpServlet {
 		try {
 			receiverPublicKey = FromBytesToKeyConverter.getPublicKeyFromBytes(receiverPublicKeyBytes);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
  
@@ -184,13 +181,11 @@ public class SendMailServlet extends HttpServlet {
 		
 		} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException
 				| NoSuchAlgorithmException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
 		/*
 		 * sending email (saving it in the database)
-		 * TODO: add digest (but before move that code on the client side)
 		 */
 		try {
 				

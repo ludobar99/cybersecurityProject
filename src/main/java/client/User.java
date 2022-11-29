@@ -20,12 +20,9 @@ public class User {
 		this.password = pwd;
 	}
 
-	
 	/*
-	 * TODO: check if re-factoring is needed
-	 * TODO: put relative path or something instead of the path of my computer
+	 * Writes privateKey on a file and returns user's publicKey
 	 */
-
 	public PublicKey createKeys(String filePath) throws NoSuchAlgorithmException, NoSuchProviderException, IOException {
 		KeysGenerator keyGen = new KeysGenerator(1024);
 		keyGen.createKeys();

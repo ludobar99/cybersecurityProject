@@ -54,7 +54,7 @@ public class NavigationServlet extends HttpServlet {
     
     public void init() throws ServletException {
     
-    	conn = DBConnection.getInstance().getConn();
+    	conn = DBConnection.getConn();
     	
     }
 
@@ -119,9 +119,6 @@ public class NavigationServlet extends HttpServlet {
 	 */
 	private String getHtmlForInbox(String email) {
 		
-		/*
-		 * TODO: create method  getMails
-		 */
 		try {
 			
 			/*
@@ -325,7 +322,7 @@ public class NavigationServlet extends HttpServlet {
 			/*
 			 * Getting sent emails
 			 */
-			ArrayList<EMail> sentEmail = DBAPI.getInbox(conn, email);
+			ArrayList<EMail> sentEmail = DBAPI.getSentEmails(conn, email);
 			
 			StringBuilder output = new StringBuilder();
 

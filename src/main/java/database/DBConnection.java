@@ -24,19 +24,22 @@ public class DBConnection {
 	private DBConnection() {
 	
 		/*
-		 * TODO:in questa dir va messo .env file, trovare un modo per creare uno script e non doverlo fare manualmente
+		 * checks if .env file exists. If not, generateEnv script must run with right path
+		 * 1. copy the path printed from the program
+		 * 2. update your generateEnv file with the right path
+		 * 3. run the script in your teminal
 		 */
 		 String currentDir = System.getProperty("user.dir");
 		 File f = new File(currentDir + "/.env");
+		 
 		 if(f.exists() && !f.isDirectory()) { 
 		     System.out.println(".env file found");
 		 } else {
 			 System.out.println(".env file not foun in " + currentDir);
-			 System.out.println("Make sure you ran the script 'generateEnv.js' and that the path in the script is " + currentDir);
+			 System.out.println("Run generateEnv.sh/generateEnv.bat and make sure that the path in the script is: " + currentDir);
 		 }
 		
 		 Dotenv dotenv = null;
-	   //  dotenv = Dotenv.configure().directory("/Users/ludo/Downloads/cybersecurityProject-master/").load();
 		 dotenv = Dotenv.configure().load();
 		 try {
 				Class.forName(dotenv.get("DRIVER_CLASS"));
@@ -69,31 +72,9 @@ public class DBConnection {
 	 * Returns the connection object.
 	 */
 	public static Connection getConn() {
-	       
+		  
+		  DBConnection.getInstance();
 		  return conn;
-	}
 	
-	 
-
-		public static void main(String[] args) {
-			
-			//DBConnection.getInstance();
-			Dotenv dotenv = null;
-		     dotenv = Dotenv.load();
-		     
-		    	
-			 try {
-					Class.forName(dotenv.get("DRIVER_CLASS"));
-					
-				    Properties connectionProps = new Properties();
-				    connectionProps.put("user", dotenv.get("DB_USER"));
-				    connectionProps.put("password", dotenv.get("SA_PASSWORD"));
-			
-			        conn = DriverManager.getConnection(dotenv.get("DB_URL"), connectionProps);
-				    System.out.println("CONN "+conn);
-		    	
-		    	} catch (ClassNotFoundException | SQLException e) {
-					e.printStackTrace();
-				}
-		}
+	}
 }

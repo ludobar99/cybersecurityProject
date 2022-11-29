@@ -65,7 +65,7 @@ public class DBAPI {
 	/*
 	 *  Gets user sent emails.
 	 */
-	public static ArrayList<EMail> sendEmail(Connection conn, String senderEmail) throws SQLException {
+	public static ArrayList<EMail> getSentEmails(Connection conn, String senderEmail) throws SQLException {
 		
 		PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE sender=? ORDER BY [time] DESC");
 		

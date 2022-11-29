@@ -44,7 +44,7 @@ public class RegisterServlet extends HttpServlet {
     
     public void init() throws ServletException {
 
-    	conn = DBConnection.getInstance().getConn();
+    	conn = DBConnection.getConn();
 
     }
 
@@ -85,10 +85,8 @@ public class RegisterServlet extends HttpServlet {
 		try {
 			password = Hash.generateHash(pwd);
 		} catch (NoSuchAlgorithmException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (InvalidKeySpecException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
