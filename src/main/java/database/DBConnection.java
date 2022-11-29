@@ -22,23 +22,19 @@ public class DBConnection {
 	 * TODO: soluzione per la path brutta, da rivedere
 	 */
 	private DBConnection() {
-		 
+	
 		/*
-		 * TODO: fare file di caricament . env in paths get root etc?
+		 * TODO:in questa dir va messo .env file, trovare un modo per creare uno script e non doverlo fare manualmente
 		 */
-//		String currentPath = "non la ha presa";
-//		try {
-//			currentPath = new java.io.File(".").getCanonicalPath();
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//		 System.out.println("Current dir:" + currentPath);
-//		 
-//		 String currentDir = System.getProperty("user.dir");
-//		 System.out.println("Current dir using System:" + currentDir);
-//		
-//		
+		 String currentDir = System.getProperty("user.dir");
+		 File f = new File(currentDir + "/.env");
+		 if(f.exists() && !f.isDirectory()) { 
+		     System.out.println(".env file found");
+		 } else {
+			 System.out.println(".env file not foun in " + currentDir);
+			 System.out.println("Make sure you ran the script 'generateEnv.js' and that the path in the script is " + currentDir);
+		 }
+		
 		 Dotenv dotenv = null;
 	   //  dotenv = Dotenv.configure().directory("/Users/ludo/Downloads/cybersecurityProject-master/").load();
 		 dotenv = Dotenv.configure().load();

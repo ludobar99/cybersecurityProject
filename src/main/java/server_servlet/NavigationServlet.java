@@ -280,13 +280,8 @@ public class NavigationServlet extends HttpServlet {
 				
 					}
 				
-				} else {
-					// TODO: perchè lo stampa??
-					System.out.println("Error getting sender public key. The user might not exist.");
 				}
-				
-				
-				
+					
 				output.append("</div>\r\n");
 			}
 
