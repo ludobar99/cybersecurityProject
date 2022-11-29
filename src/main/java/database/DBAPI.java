@@ -1,5 +1,6 @@
 package database;
 
+import java.security.PublicKey;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -141,6 +142,27 @@ public class DBAPI {
 		statement2.execute();
 
 		
+	}
+	
+	/*
+	 * Gets user's public key.
+	 */
+	
+	public static byte[] getPublicKey(Connection conn, String email) throws SQLException {
+		PreparedStatement publicKeyStatement;
+		ResultSet resSet;
+		byte[] publicKeyBytes = null;
+			
+		publicKeyStatement = conn.prepareStatement("SELECT publickey FROM [user] WHERE email=?");
+		publicKeyStatement.setString(1, email);
+		resSet = publicKeyStatement.executeQuery();
+		
+		while (resSet.next()) {
+			
+			publicKeyBytes = resSet.getBytes(1);
+		}
+		
+		return publicKeyBytes;
 	}
 	
 }

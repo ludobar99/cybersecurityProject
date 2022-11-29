@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import database.DBAPI;
+
 /*
  * 
  * This class provides methods to get private and public keys' byte arrays from a file/database.
@@ -48,20 +50,9 @@ public class KeyGetter {
 	 * Gets the public key corresponding to the email in the database. If the email
 	 * doesn't correspond to any public key, returns null.
 	 */
-	public static byte[] getPublicKeyBytes(String email) throws SQLException {
+	public static byte[] getPublicKeyBytes(Connection conn, String email) throws SQLException {
 		
-		PreparedStatement publicKeyStatement;
-		ResultSet resSet;
-		byte[] publicKeyBytes = null;
-			
-		publicKeyStatement = conn.prepareStatement("SELECT publickey FROM [user] WHERE email=?");
-		publicKeyStatement.setString(1, email);
-		resSet = publicKeyStatement.executeQuery();
-		
-		while (resSet.next()) {
-			
-			publicKeyBytes = resSet.getBytes(1);
-		}
+		byte[] publicKeyBytes = DBAPI.getPublicKey(conn, email);
 		
 		return publicKeyBytes;
 		

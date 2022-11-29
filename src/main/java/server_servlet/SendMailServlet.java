@@ -120,7 +120,7 @@ public class SendMailServlet extends HttpServlet {
 		KeyGetter.init();
 		byte[] receiverPublicKeyBytes = null;
 		try {
-			receiverPublicKeyBytes = KeyGetter.getPublicKeyBytes(receiver);
+			receiverPublicKeyBytes = KeyGetter.getPublicKeyBytes(conn, receiver);
 		} catch (SQLException e3) {
 			// TODO Auto-generated catch block
 			e3.printStackTrace();

@@ -224,7 +224,7 @@ public class NavigationServlet extends HttpServlet {
 				 */
 				if (currentEmail.getDigitalSignature() != null && _body != null) {
 					
-					byte[] senderPublicKeyBytes = KeyGetter.getPublicKeyBytes(_emailSender);
+					byte[] senderPublicKeyBytes = KeyGetter.getPublicKeyBytes(conn, _emailSender);
 					byte[] digitalSignature = null;
 					
 					// checking that the public key is not null
