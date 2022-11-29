@@ -50,7 +50,6 @@ public class Hash {
 	/*
 	 * Checks correctness of the password. It generates an hash from the input password and 
 	 * compares it with the password in the database.
-	 * TODO: learn algorithm
 	 */
 	public static boolean validatePassword(String password, String hashedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		   
