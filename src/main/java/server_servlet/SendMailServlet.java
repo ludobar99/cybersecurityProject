@@ -114,10 +114,7 @@ public class SendMailServlet extends HttpServlet {
 		
 		byte[] encryptedBody = null;
 		byte[] encryptedSubject = null;
-		/*
-		 * TODO: remove this method somehow
-		 */
-		KeyGetter.init();
+		
 		byte[] receiverPublicKeyBytes = null;
 		try {
 			receiverPublicKeyBytes = KeyGetter.getPublicKeyBytes(conn, receiver);

@@ -21,32 +21,6 @@ import database.DBAPI;
 public class KeyGetter {
 	
 	/*
-	 * TODO: environment variables
-	 */
-	private static final String USER = "sa";
-	private static final String PWD = "Strong.Pwd-123";
-	private static final String DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=examDB;encrypt=true;trustServerCertificate=true;";
-    
-	private static Connection conn;
-    
-    public static void init() {
-    	try {
-    		Class.forName(DRIVER_CLASS);
-   
-		    Properties connectionProps = new Properties();
-		    connectionProps.put("user", USER);
-		    connectionProps.put("password", PWD);
-	
-	        conn = DriverManager.getConnection(DB_URL, connectionProps);
-		        	
-    	} catch (SQLException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-    }
-    
-	
-	/*
 	 * Gets the public key corresponding to the email in the database. If the email
 	 * doesn't correspond to any public key, returns null.
 	 */

@@ -153,11 +153,6 @@ public class NavigationServlet extends HttpServlet {
 				byte[] decryptedBody = null;
 				byte[] decryptedSubject = null;
 				
-				/*
-				 * TODO: remove this method somehow
-				 */
-				KeyGetter.init();
-				
 				byte[] privateKeyBytes = null;
 				
 				try {
