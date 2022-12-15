@@ -122,6 +122,9 @@
 		// Content decryption
 		window.addEventListener("load", async () => {
 
+			// Instantiating sanitizer
+			const sanitizer = new Sanitizer()
+
 			// Retrieving private key
 			const privateKey = await getDecryptionKey();
 
@@ -156,8 +159,7 @@
 							str2ab(contentEncrypted)
 					)
 					// Sanitizing
-					const sanitizedContent = DOMPurify.sanitize(ab2str(contentDecrypted));
-					element.innerHTML = sanitizedContent;
+					element.setHTML(ab2str(contentDecrypted), { sanitizer });
 
 					// Verifies signature
 					if (signature && publicKey) {
