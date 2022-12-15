@@ -2,7 +2,7 @@
 
 # Cybersecurity Project - 2021/2022
 
-The authors of this project are Massimo Marcon - *studentNumber* - and Ludovica Barozzi - 16851.
+The authors of this project are Massimo Marcon - 17110 - and Ludovica Barozzi - 16851.
 The project is a web application that allows users to send and receive emails. 
 Starting from an unsecure implementation, several mechanisms were applied to improve its cybersecurity profile. 
 
@@ -81,5 +81,9 @@ The application consists of three components:
 
 #### Database setup
 
-1. Run docker-compose.dev.yml
+1. Run docker-compose.dev.yml in the project root
+
+```shell
+docker-compose -f docker-compose.dev.yml up
+``` 
 
