@@ -16,8 +16,10 @@ public class DBAPI {
 	/*
 	 *  Gets user account. If no account corresponds to the email, returns null.
 	 */
-	public static User getAccount(Connection conn, String email) throws SQLException {
+	public static User getAccount(String email) throws SQLException {
 				
+		Connection conn = DBConnection.getConn();
+		
 		User user;
 		
 		PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=?");
@@ -40,7 +42,9 @@ public class DBAPI {
 	/*
 	 *  Gets user inbox.
 	 */
-	public static ArrayList<EMail> getInbox(Connection conn, String receiverEmail) throws SQLException {
+	public static ArrayList<EMail> getInbox(String receiverEmail) throws SQLException {
+		
+		Connection conn = DBConnection.getConn();
 		
 		PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE receiver=? ORDER BY [time] DESC");
 		
@@ -64,7 +68,9 @@ public class DBAPI {
 	/*
 	 *  Gets user sent emails.
 	 */
-	public static ArrayList<EMail> getSentEmails(Connection conn, String senderEmail) throws SQLException {
+	public static ArrayList<EMail> getSentEmails(String senderEmail) throws SQLException {
+		
+		Connection conn = DBConnection.getConn();
 		
 		PreparedStatement statement = conn.prepareStatement("SELECT * FROM mail WHERE sender=? ORDER BY [time] DESC");
 		
@@ -88,7 +94,9 @@ public class DBAPI {
 	/*
 	 * Sending email aka saving it in the database.
 	 */
-	public static void sendEmail(Connection conn, String sender, String receiver, byte[] encryptedSubject, byte[] encryptedBody, byte[] encryptedDigest, String timestamp) throws SQLException {
+	public static void sendEmail(String sender, String receiver, byte[] encryptedSubject, byte[] encryptedBody, byte[] encryptedDigest, String timestamp) throws SQLException {
+		
+		Connection conn = DBConnection.getConn();
 		
 		PreparedStatement statement = conn.prepareStatement("INSERT INTO mail ( sender, receiver, subject, body, digitalSignature, [time] ) VALUES ( ?, ?, ?, ?, ?, ?)");
 		
@@ -108,7 +116,9 @@ public class DBAPI {
 	/*
 	 * Registers new user. Saves data in the database
 	 */
-	public static void registerUser(Connection conn, String name, String surname, String email, String password, String publicKey) throws SQLException {
+	public static void registerUser(String name, String surname, String email, String password, String publicKey) throws SQLException {
+		Connection conn = DBConnection.getConn();
+		
 		PreparedStatement statement2 = conn.prepareStatement(
 				"INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)"
 		);
@@ -126,7 +136,9 @@ public class DBAPI {
 	 * Gets user's public key.
 	 */
 	
-	public static byte[] getPublicKeys(Connection conn) throws SQLException {
+	public static byte[] getPublicKeys() throws SQLException {
+		Connection conn = DBConnection.getConn();
+		
 		PreparedStatement publicKeyStatement;
 		ResultSet resSet;
 		byte[] publicKeyBytes = null;
@@ -142,7 +154,9 @@ public class DBAPI {
 		return publicKeyBytes;
 	}
 
-	public static byte[] getPublicKey(Connection conn, String email) throws SQLException {
+	public static byte[] getPublicKey(String email) throws SQLException {
+		Connection conn = DBConnection.getConn();
+		
 		PreparedStatement publicKeyStatement;
 		ResultSet resSet;
 		byte[] publicKeyBytes = null;

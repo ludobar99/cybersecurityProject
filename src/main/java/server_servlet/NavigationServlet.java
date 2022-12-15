@@ -2,19 +2,13 @@ package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -28,13 +22,11 @@ import asymmetricEncryption.Decryptor;
 import asymmetricEncryption.FromBytesToKeyConverter;
 import asymmetricEncryption.KeyGetter;
 import database.DBAPI;
-import database.DBConnection;
 import digitalSignature.DigestGenerator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import util.Paths;
 import util.SessionManager;
 import util.Validator;
 
@@ -46,7 +38,7 @@ public class NavigationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
 	  
-	private static Connection conn;
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -56,7 +48,7 @@ public class NavigationServlet extends HttpServlet {
     
     public void init() throws ServletException {
     
-    	conn = DBConnection.getConn();
+    	
     	
     }
 
@@ -117,7 +109,7 @@ public class NavigationServlet extends HttpServlet {
 			/*
 			 * Getting inbox emails
 			 */
-			ArrayList<EMail> inbox = DBAPI.getInbox(conn, email);
+			ArrayList<EMail> inbox = DBAPI.getInbox(email);
 			
 			StringBuilder output = new StringBuilder();
 
@@ -148,7 +140,7 @@ public class NavigationServlet extends HttpServlet {
 				 */
 				if (currentEmail.getDigitalSignature() != null && body != null) {
 					
-					byte[] senderPublicKeyBytes = KeyGetter.getPublicKeyBytes(conn, sender);
+					byte[] senderPublicKeyBytes = KeyGetter.getPublicKeyBytes(sender);
 					byte[] digitalSignature = currentEmail.getDigitalSignature();
 					
 					// checking that the public key is not null
@@ -254,7 +246,7 @@ public class NavigationServlet extends HttpServlet {
 			/*
 			 * Getting sent emails
 			 */
-			ArrayList<EMail> sentEmail = DBAPI.getSentEmails(conn, email);
+			ArrayList<EMail> sentEmail = DBAPI.getSentEmails(email);
 			
 			StringBuilder output = new StringBuilder();
 

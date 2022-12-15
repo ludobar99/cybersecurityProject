@@ -4,18 +4,11 @@ import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
-
 import org.apache.commons.text.StringEscapeUtils;
 
 import client.User;
 import database.DBAPI;
-import database.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,9 +23,7 @@ import util.Validator;
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-     
-	private static Connection conn;
-	
+     	
 	/**
      * @see HttpServlet#HttpServlet()
      */
@@ -42,7 +33,7 @@ public class LoginServlet extends HttpServlet {
     
     public void init() throws ServletException {
 
-    	conn = DBConnection.getConn();
+    	
    
     }
 
@@ -73,7 +64,7 @@ public class LoginServlet extends HttpServlet {
 			/*
 			 * getting user account
 			 */
-			User user = DBAPI.getAccount(conn, email);
+			User user = DBAPI.getAccount(email);
 
 			/*
 			 * no match was found for email address; user is null
