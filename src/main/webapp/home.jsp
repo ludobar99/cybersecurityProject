@@ -12,6 +12,141 @@
 	
 	<title>Home page</title>
 
+	<script>
+		// Transforms string to ArrayBuffer
+		function ab2str(buf) {
+			return String.fromCharCode.apply(null, new Uint8Array(buf));
+		}
+
+		// Transforms ArrayBuffer to string
+		function str2ab(str) {
+			const buf = new ArrayBuffer(str.length);
+			const bufView = new Uint8Array(buf);
+			for (let i = 0, strLen = str.length; i < strLen; i++) {
+				bufView[i] = str.charCodeAt(i);
+			}
+			return buf;
+		}
+	</script>
+	<script>
+		// Content decryption
+		window.addEventListener("load", async () => {
+
+			// Retrieving private key
+			const userEmail = '${email}'
+			const privateContents = window.localStorage.getItem(`email-client.private.` + userEmail)
+			const privateString = window.atob(privateContents);
+			const privateRsa = str2ab(privateString);
+			const privateKey = await window.crypto.subtle.importKey(
+					"pkcs8",
+					privateRsa,
+					{
+						name: "RSA-OAEP",
+						hash: "SHA-256"
+					},
+					true,
+					["decrypt"]
+			)
+
+			// Decrypting received contents
+			const elements = document.querySelectorAll(".email-subject, .email-body");
+			for (const element of elements) {
+				const contentEncryptedBase64 = element.innerHTML
+				const contentEncrypted = window.atob(contentEncryptedBase64);
+				const contentDecrypted = await window.crypto.subtle.decrypt(
+						{
+							name: "RSA-OAEP",
+							hash: "SHA-256"
+						},
+						privateKey,
+						str2ab(contentEncrypted)
+				)
+				element.innerHTML = ab2str(contentDecrypted);
+			}
+		})
+	</script>
+	<script>
+		// Email sending
+		window.addEventListener("load", () => {
+			const form = document.getElementById("submitForm");
+			async function sendEmail() {
+
+				// Retrieving generic data
+				const formData = new FormData(form);
+				const receiver = formData.get("receiver");
+				const digitalSignature = formData.get("digitalSignature");
+
+				// Fetching receiver public key
+				const publicKeyResult = await fetch("ReceiversServlet?" + new URLSearchParams({
+					email: receiver
+				}), {
+					credentials: "same-origin"
+				})
+				if (!publicKeyResult.ok) throw Error("Error while fetching the public key of the receiver.")
+
+				// Importing received key
+				const publicKeyText = await publicKeyResult.text();
+				const publicString = window.atob(publicKeyText);
+				const publicAb = str2ab(publicString);
+				const publicKey = await window.crypto.subtle.importKey(
+						"spki",
+						publicAb,
+						{
+							name: "RSA-OAEP",
+							hash: "SHA-256"
+						},
+						true,
+						["encrypt"]
+				);
+
+				// Content encryption
+				const emailBody = formData.get("body");
+				const encryptedBody = await window.crypto.subtle.encrypt(
+						{
+							name: "RSA-OAEP",
+						},
+						publicKey,
+						str2ab(emailBody)
+				)
+
+				const emailSubject = formData.get("subject");
+				const encryptedSubject = await window.crypto.subtle.encrypt(
+						{
+							name: "RSA-OAEP",
+						},
+						publicKey,
+						str2ab(emailSubject)
+				)
+
+				// Encoding content and overwriting form data
+				const encryptedBodyBase64 = window.btoa(ab2str(encryptedBody))
+				const encryptedSubjectBase64 = window.btoa(ab2str(encryptedSubject))
+
+				formData.set("body", encryptedBodyBase64);
+				formData.set("subject", encryptedSubjectBase64);
+
+				// Sending email
+				const sendMailResult = await fetch("SendMailServlet?" + new URLSearchParams(formData), {
+					method: "POST",
+					credentials: "same-origin",
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+					},
+				})
+				if (!sendMailResult.ok) throw Error("Error while sending the email.")
+
+				// Rendering received HTML
+				document.body.innerHTML = await sendMailResult.text()
+			}
+			if (form) {
+				form.addEventListener("submit", async (event) => {
+					event.preventDefault();
+					await sendEmail();
+				});
+			}
+		})
+	</script>
+
 </head>
 <body>
 	<nav class="navbar">
@@ -19,7 +154,7 @@
 			<p>E-Mail Client</p>
 	  	</div>
 	  	<div id="right">
-			<p>
+			<p id="email">
 				<%
 					String email = (String) request.getAttribute("email");
 				%>

@@ -31,14 +31,10 @@ public class LogoutServlet extends HttpServlet {
 		 * invalidates user session and returns to login page
 		 */
 		try {
-			
 			request.getSession(false).invalidate();
 			request.getRequestDispatcher("login.html").forward(request, response);
-	
-		}	catch (NullPointerException e) { 
-			
-			request.getRequestDispatcher("login.html").forward(request, response); 
-			
+		}	catch (NullPointerException e) {
+			request.getRequestDispatcher("login.html").forward(request, response);
 		}
 
 	}

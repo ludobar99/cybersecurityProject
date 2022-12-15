@@ -3,9 +3,74 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Register</title>
+	<script>
+		// From ArrayBuffer to string
+		function ab2str(buf) {
+			return String.fromCharCode.apply(null, new Uint8Array(buf));
+		}
+	</script>
+	<script>
+		window.addEventListener("load", () => {
+			const form = document.getElementById("myForm");
+			async function handleSubmit() {
+				const formData = new FormData(form);
+
+				// Generating key pair
+				const keyPair = await window.crypto.subtle.generateKey(
+						{
+							name: "RSA-OAEP",
+							modulusLength: 1024,
+							publicExponent: new Uint8Array([1, 0, 1]),
+							hash: "SHA-256"
+						},
+						true,
+						["encrypt", "decrypt"]
+				);
+
+				// Exporting keys
+				const publicKey = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
+				const publicString = ab2str(publicKey);
+				const publicBase64 = window.btoa(publicString);
+
+				const privateKey = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+				const privateString = ab2str(privateKey);
+				const privateBase64 = window.btoa(privateString);
+
+				// Creating url parameters
+				const urlEncodedDataPairs = [];
+				for (const [name, value] of formData.entries()) {
+					urlEncodedDataPairs.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
+				}
+				urlEncodedDataPairs.push(`${encodeURIComponent("publicKey")}=${encodeURIComponent(publicBase64)}`);
+				const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+
+				// Registering user
+				const result = await fetch('RegisterServlet', {
+					method: "POST",
+					redirect: 'follow',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+					},
+					body: urlEncodedData,
+				})
+
+				if (result.ok) {
+					// Saving private key in local storage
+					window.localStorage.setItem(`email-client.private.${formData.get("email")}`, privateBase64)
+				}
+
+				// Redirect
+				if (result.redirected) window.location.href = result.url
+			}
+			form.addEventListener("submit", async (event) => {
+				event.preventDefault();
+				await handleSubmit();
+			})
+		})
+	</script>
 </head>
 <body>
-	<form action="RegisterServlet" method="post">
+	<form id="myForm">
 		<table>
 			<tr>
 				<td><font face="verdana" size="2px">Name:</font></td>
@@ -22,9 +87,7 @@
 			<tr>
 				<td><font face="verdana" size="2px">Password:</font></td>
 				<td><input type="password" id="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required></td>
-				
 			</tr>
-			
 		</table>
 		<table>
 			<tr>

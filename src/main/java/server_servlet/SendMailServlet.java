@@ -73,64 +73,38 @@ public class SendMailServlet extends HttpServlet {
 			response.sendRedirect("login.html");
 			return;
 		}
-		String user = SessionManager.getSessionUser(session);
+		String sender = SessionManager.getSessionUser(session);
 
-		String sender = request.getParameter("email").replace("'", "''");
+		// Extracting data from request
 		String receiver = request.getParameter("receiver").replace("'", "''");
 		String subject = request.getParameter("subject").replace("'", "''");
 		String body = request.getParameter("body").replace("'", "''");
 		String timestamp = new Date(System.currentTimeMillis()).toInstant().toString();
-		
+
 		/*
-		 * if the email of the session and the email in the request are different, the user is redirected to login.html
+		 * sanitizing fields
 		 */
-		if (user.compareTo(sender) != 0) {
-			request.getRequestDispatcher("login.html").forward(request, response);
-			return;
-		}
-		
-		/*
-		 *  validating both e-mails
-		 */
-		if (!Validator.validateEmail(sender) | !Validator.validateEmail(receiver)) {
+		receiver = StringEscapeUtils.escapeHtml4(receiver);
+		subject = StringEscapeUtils.escapeHtml4(subject);
+		body = StringEscapeUtils.escapeHtml4(body);
+		timestamp = StringEscapeUtils.escapeHtml4(timestamp);
+
+		// Validating receiver email
+		if (!Validator.validateEmail(receiver)) {
 			System.out.println("Invalid email");
 			request.getRequestDispatcher("login.html").forward(request, response);
 			return;
 		}
-		
-		/*
-		 * sanitizing fields
-		 */
-		sender = StringEscapeUtils.escapeHtml4(sender);
-		receiver = StringEscapeUtils.escapeHtml4(receiver);
-		subject = StringEscapeUtils.escapeHtml4(subject);
-		body = StringEscapeUtils.escapeHtml4(body);
-		
-		//TODO: mail encryption
-		//1. get public key of the receiver
-		//2. encrypt email (body and subject) with public key
-		//3. send email
-		// ENSURE that the e-mail is encrypted on the client side!
-		
-		byte[] encryptedBody = null;
-		byte[] encryptedSubject = null;
-		
-		byte[] receiverPublicKeyBytes = null;
+
+		// Checking receiver existence
 		try {
-			receiverPublicKeyBytes = KeyGetter.getPublicKeyBytes(conn, receiver);
-		} catch (SQLException e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
-		}
-		
-		/*
-		 * if receiverPublicKeyBytes is null (the email does not exist), it prints an error message
-		 */
-		if (receiverPublicKeyBytes == null) {
-			
-			System.out.println("Email address " + receiver + " does not exist.");
-			request.getRequestDispatcher("home.jsp").forward(request, response);
-			return;
+			if (DBAPI.getAccount(conn, receiver) == null) {
+				System.out.println("Request receiver does not exist");
+				response.sendError(500, "Request receiver does not exist");
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		/*
@@ -150,7 +124,7 @@ public class SendMailServlet extends HttpServlet {
 					String sourcePath = getServletContext().getRealPath("/");
 					Path rootPath = Paths.getRootPath(sourcePath);
 
-					byte[] privateKeyBytes = KeyGetter.getPrivateKeyBytes(rootPath.toString(), user);
+					byte[] privateKeyBytes = KeyGetter.getPrivateKeyBytes(rootPath.toString(), receiver);
 					privateKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKeyBytes);
 				} catch (InvalidKeySpecException | IOException e) {
 					e.printStackTrace();
@@ -163,38 +137,16 @@ public class SendMailServlet extends HttpServlet {
 			}
 		}
 		
-		/*
-		 * encrypts email (body and subject) with public key
-		 */
-		 
-		PublicKey receiverPublicKey = null;
+		// Saving database in email (sending)
 		try {
-			receiverPublicKey = FromBytesToKeyConverter.getPublicKeyFromBytes(receiverPublicKeyBytes);
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException e2) {
-			e2.printStackTrace();
-		}
- 
-		try {
-		
-			encryptedBody = Encryptor.encrypt(body.getBytes(), receiverPublicKey);
-			encryptedSubject = Encryptor.encrypt(subject.getBytes(), receiverPublicKey);
-		
-		} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException
-				| NoSuchAlgorithmException e1) {
-			e1.printStackTrace();
-		}
-		
-		/*
-		 * sending email (saving it in the database)
-		 */
-		try {
-				
-			DBAPI.sendEmail(conn, sender, receiver, encryptedSubject, encryptedBody, encryptedDigest, timestamp);
-			
+			byte[] bodyBytes = body.getBytes();
+			byte[] subjectBytes = subject.getBytes();
+
+			DBAPI.sendEmail(conn, sender, receiver, subjectBytes, bodyBytes, encryptedDigest, timestamp);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		request.setAttribute("email", sender);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
 	}

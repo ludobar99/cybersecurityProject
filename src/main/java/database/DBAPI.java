@@ -130,7 +130,7 @@ public class DBAPI {
 	/*
 	 * Registers new user. Saves data in the database
 	 */
-	public static void registerUser(Connection conn, String name, String surname, String email, String password, byte[] publicKeyBytes) throws SQLException {
+	public static void registerUser(Connection conn, String name, String surname, String email, String password, String publicKey) throws SQLException {
 		PreparedStatement statement2 = conn.prepareStatement(
 				"INSERT INTO [user] ( name, surname, email, password, publickey ) VALUES (?,?,?,?,?)"
 		);
@@ -138,7 +138,7 @@ public class DBAPI {
 		statement2.setString(2, surname);
 		statement2.setString(3, email);
 		statement2.setString(4, password);	
-		statement2.setBytes(5, publicKeyBytes);
+		statement2.setString(5, publicKey);
 		statement2.execute();
 
 		
@@ -148,20 +148,36 @@ public class DBAPI {
 	 * Gets user's public key.
 	 */
 	
-	public static byte[] getPublicKey(Connection conn, String email) throws SQLException {
+	public static byte[] getPublicKeys(Connection conn) throws SQLException {
 		PreparedStatement publicKeyStatement;
 		ResultSet resSet;
 		byte[] publicKeyBytes = null;
 			
+		publicKeyStatement = conn.prepareStatement("SELECT email, publickey FROM [user]");
+		resSet = publicKeyStatement.executeQuery();
+
+
+		while (resSet.next()) {
+			publicKeyBytes = resSet.getBytes(2);
+		}
+		
+		return publicKeyBytes;
+	}
+
+	public static byte[] getPublicKey(Connection conn, String email) throws SQLException {
+		PreparedStatement publicKeyStatement;
+		ResultSet resSet;
+		byte[] publicKeyBytes = null;
+
 		publicKeyStatement = conn.prepareStatement("SELECT publickey FROM [user] WHERE email=?");
 		publicKeyStatement.setString(1, email);
 		resSet = publicKeyStatement.executeQuery();
-		
+
 		while (resSet.next()) {
-			
+
 			publicKeyBytes = resSet.getBytes(1);
 		}
-		
+
 		return publicKeyBytes;
 	}
 	

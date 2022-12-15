@@ -57,10 +57,9 @@ public class RegisterServlet extends HttpServlet {
 		String surname = request.getParameter("surname").replace("'", "''");
 		String email = request.getParameter("email").replace("'", "''");
 		String pwd = request.getParameter("password").replace("'", "''");
+		String publicKey = request.getParameter("publicKey").replace("'", "''");
 
-		/*
-		 *  Validating fields
-		 */
+		// Validation
 		if (!Validator.validateEmail(email)
 				| !Validator.validatePassword(pwd)
 				| !Validator.validateName(name)
@@ -71,9 +70,7 @@ public class RegisterServlet extends HttpServlet {
 				return;
 		}
 		
-		/*
-		 * Sanitizing fields
-		 */
+		//	Sanitization
 		email = StringEscapeUtils.escapeHtml4(email);
 		name = StringEscapeUtils.escapeHtml4(name);
 		surname = StringEscapeUtils.escapeHtml4(surname);
@@ -90,33 +87,20 @@ public class RegisterServlet extends HttpServlet {
 			e1.printStackTrace();
 		}
 		
-		
-		
 		try {
-			
-			if (DBAPI.checkIfUserExists(conn, email)) {
+
+			// Checking if user already exists
+			if (DBAPI.getAccount(conn, email) == null) {
 				System.out.println("Email already registered!");
 				response.sendRedirect("register.html");
 				return;
 			}
 			
 			/*
-			 * Generates user's keypair (public and private key). It writes the private key in a file
-			 * on the "client side" and returns the public key.
-			 */
-			String sourcePath = getServletContext().getRealPath("/" );
-			Path rootPath = Paths.getRootPath(sourcePath);
-			User thisUser = new User(email, "a");
-
-			PublicKey publickey = thisUser.createKeys(rootPath.toString() + "/keys/" + email);
-			
-			/*
 			 * Encodes the publickey to a byte array to store it in the database.
 			 * TODO: save in bytes or save in a string?
 			 */
-			byte[] publicKeyBytes = publickey.getEncoded();
-			
-			DBAPI.registerUser(conn, name, surname, email, password, publicKeyBytes);
+			DBAPI.registerUser(conn, name, surname, email, password, publicKey);
 			
 			/*
 			 *  After registration, redirects to login

@@ -47,9 +47,9 @@ public class LoginServlet extends HttpServlet {
     }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		response.setContentType("text/html");
-		
+
+		// Extracting data
 		String email = request.getParameter("email");
 		String pwd = request.getParameter("password");
 		
@@ -74,16 +74,13 @@ public class LoginServlet extends HttpServlet {
 			 * getting user account
 			 */
 			User user = DBAPI.getAccount(conn, email);
-			
-			
+
 			/*
 			 * no match was found for email address; user is null
 			 */
 			if (user == null) {
-				
 				System.out.println("Login failed!");
 				request.getRequestDispatcher("login.html").forward(request, response);
-				
 				return;
 			}
 			
@@ -93,31 +90,24 @@ public class LoginServlet extends HttpServlet {
 			 * 
 			 */
 			if (!Hash.validatePassword(pwd, user.getPassword())) {
-				
 				System.out.println("Login failed!");
 				request.getRequestDispatcher("login.html").forward(request, response);
-			
 				return;
 			}
 				
 			/*
 			 *  if login was successful, the session is associated with the user email
 			 */
-			SessionManager.setSessionUser(request.getSession(), user.getEmail());
-			
-			request.setAttribute("email", user.getEmail());
-			
 			System.out.println("Login succeeded!");
-			
+
+			SessionManager.setSessionUser(request.getSession(), user.getEmail());
+			request.setAttribute("email", user.getEmail());
 			request.setAttribute("content", "");
 			request.getRequestDispatcher("home.jsp").forward(request, response);
-			
-			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.getRequestDispatcher("login.html").forward(request, response);}
-
 		catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

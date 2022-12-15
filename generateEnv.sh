@@ -1,6 +1,6 @@
 #!/bin/bash
 
-varPathToFile=/Applications/java-2022-03/Eclipse.app/Contents/MacOS/.env
+varPathToFile=/Users/marconms/Downloads/apache-tomcat-10.0.27/bin/.env
 echo "creating .env file..."
 echo $varPathToFile
 

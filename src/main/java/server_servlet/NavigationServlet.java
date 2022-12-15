@@ -2,6 +2,7 @@ package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -12,6 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -80,8 +82,7 @@ public class NavigationServlet extends HttpServlet {
 			request.getRequestDispatcher("login.html").forward(request, response);
 			return;
 		}
-		
-		
+
 		/*
 		 * sanitizing user
 		 */
@@ -89,29 +90,21 @@ public class NavigationServlet extends HttpServlet {
 					
 		
 		if (request.getParameter("newMail") != null)
-		
 			request.setAttribute("content", getHtmlForNewMail(user));
-		
+
 		else if (request.getParameter("inbox") != null)
-			
 			request.setAttribute("content", getHtmlForInbox(user));
-	
+
 		else if (request.getParameter("sent") != null)
-			
 			request.setAttribute("content", getHtmlForSent(user));
-		
+
 		else if (request.getParameter("search") != null) {
-			
 			String item = request.getParameter("search").replace("'", "''");
-			
 			request.setAttribute("content", getHTMLforSearch(item));
-	
-		
 		}
 	
 		request.setAttribute("email", user);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
-			
 	}
 
 	/*
@@ -134,90 +127,29 @@ public class NavigationServlet extends HttpServlet {
 			for (int i = 0; i < inbox.size(); i++) {
 				
 				EMail currentEmail = inbox.get(i);
-				            
-			
-				String _emailSender = currentEmail.getSender();
-				byte[] _encryptedSubject = currentEmail.getSubject();
-				byte[] _encryptedBody = currentEmail.getBody();
-				byte[] _digitalSignature = currentEmail.getDigitalSignature();
-				String _timestamp;
-				String _body = null;
-				String _subject = null;
 
-				/*
-				 * email decryption via private key 
-				 */
-				byte[] decryptedBody = null;
-				byte[] decryptedSubject = null;
-				
-				byte[] privateKeyBytes = null;
-				
-				try {
-			
-					String sourcePath = getServletContext().getRealPath("/");
-					Path rootPath = Paths.getRootPath(sourcePath);
+				String sender = currentEmail.getSender();
+				String timestamp = currentEmail.getTimestamp();
+				byte[] subject = currentEmail.getSubject();
+				byte[] body = currentEmail.getBody();
 
-					privateKeyBytes = KeyGetter.getPrivateKeyBytes(rootPath.toString(), email);
-				
-				} catch (IOException e1) {
+				String subjectString = new String(subject);
+				String bodyString = new String(body);
 
-					e1.printStackTrace();
-				}
-				
-				PrivateKey privateKey = null;
-				try {
-					privateKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKeyBytes);
-				} catch (InvalidKeySpecException | NoSuchAlgorithmException e1) {
-
-					e1.printStackTrace();
-				}
-				
-				try {
-				
-					
-					decryptedBody = Decryptor.decrypt(_encryptedBody, privateKey);
-					_body = new String(decryptedBody);
-					
-					decryptedSubject = Decryptor.decrypt(_encryptedSubject, privateKey);
-					_subject = new String(decryptedSubject);
-				
-				} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException
-						| NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				/*
-				 * validating email
-				 */
-				if (!Validator.validateEmail(_emailSender)) {
-					System.out.println("Invalid email");
-					return "";
-				}
-				
-				/*
-				 * sanitizing inputs 
-				 */
-				_emailSender = StringEscapeUtils.escapeHtml4(_emailSender);
-				_body = StringEscapeUtils.escapeHtml4(_body);
-				_subject = StringEscapeUtils.escapeHtml4(_subject);
-				_timestamp = StringEscapeUtils.escapeHtml4(currentEmail.getTimestamp());
-				
-				
 				output.append("<div class='mail-inbox'><span>");
-				output.append("FROM:&emsp;" + _emailSender + "&emsp;&emsp;AT:&emsp;" + _timestamp);
+				output.append("FROM:&emsp;" + sender + "&emsp;&emsp;AT:&emsp;" + timestamp);
 				output.append("</span>");
-				output.append("<br><b>" + _subject + "</b>\r\n");
-				output.append("<br>" + _body);
+				output.append("<br><b><span class=\"email-subject\">" + subjectString + "</span></b>\r\n");
+				output.append("<br><span class=\"email-body\">" + bodyString + "</span>");
 				
 				/*
 				 * checks if the email was digitally signed
 				 * 
 				 */
-				if (currentEmail.getDigitalSignature() != null && _body != null) {
+				if (currentEmail.getDigitalSignature() != null && body != null) {
 					
-					byte[] senderPublicKeyBytes = KeyGetter.getPublicKeyBytes(conn, _emailSender);
-					byte[] digitalSignature = null;
+					byte[] senderPublicKeyBytes = KeyGetter.getPublicKeyBytes(conn, sender);
+					byte[] digitalSignature = currentEmail.getDigitalSignature();
 					
 					// checking that the public key is not null
 					if (senderPublicKeyBytes != null) {
@@ -235,7 +167,7 @@ public class NavigationServlet extends HttpServlet {
 						
 						try {
 						
-							digitalSignature = Decryptor.decrypt(_digitalSignature, senderPublicKey);
+							digitalSignature = Decryptor.decrypt(digitalSignature, senderPublicKey);
 							System.out.println(digitalSignature);
 						
 						} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException
@@ -250,9 +182,7 @@ public class NavigationServlet extends HttpServlet {
 						byte[] digest = null;
 						
 						try {
-							
-							digest = DigestGenerator.generateDigest(_body);
-						
+							digest = DigestGenerator.generateDigest(bodyString);
 						} catch (NoSuchAlgorithmException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -260,13 +190,12 @@ public class NavigationServlet extends HttpServlet {
 						
 						if (Arrays.equals(digest, digitalSignature)) {
 						
-							output.append("\n" + _emailSender + " digitally signed this email.");
+							output.append("\n" + sender + " digitally signed this email.");
 						
 						} else {
 					
-							output.append("\n" + _emailSender + " digitally signed this email, but something went wrong.\n");
-							output.append(_emailSender + " didn't sign this email or the content was altered.");
-
+							output.append("\n" + sender + " digitally signed this email, but something went wrong.\n");
+							output.append(sender + " didn't sign this email or the content was altered.");
 					
 						}
 				
@@ -284,6 +213,9 @@ public class NavigationServlet extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return "ERROR IN FETCHING INBOX MAILS!";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
 		}
 	}
 	
@@ -304,7 +236,7 @@ public class NavigationServlet extends HttpServlet {
 
 		
 		return 
-				"<form id=\"submitForm\" class=\"form-resize\" action=\"SendMailServlet\" method=\"post\">\r\n"
+				"<form id=\"submitForm\" class=\"form-resize\">\r\n"
 				+ "		<input type=\"hidden\" name=\"email\" value=\""+email+"\">\r\n"
 				+ "		<input class=\"single-row-input\" type=\"email\" name=\"receiver\" placeholder=\"Receiver\" required>\r\n"
 				+ "		<input class=\"single-row-input\" type=\"text\"  name=\"subject\" placeholder=\"Subject\" required>\r\n"

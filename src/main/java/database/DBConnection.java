@@ -43,15 +43,14 @@ public class DBConnection {
 		 dotenv = Dotenv.configure().load();
 		 try {
 				Class.forName(dotenv.get("DRIVER_CLASS"));
-				
+
 			    Properties connectionProps = new Properties();
 			    connectionProps.put("user", dotenv.get("DB_USER"));
 			    connectionProps.put("password", dotenv.get("SA_PASSWORD"));
 		
 		        conn = DriverManager.getConnection(dotenv.get("DB_URL"), connectionProps);
-			    
-	    	
-	    	} catch (ClassNotFoundException | SQLException e) {
+
+		 } catch (ClassNotFoundException | SQLException e) {
 				e.printStackTrace();
 			}
 	}
