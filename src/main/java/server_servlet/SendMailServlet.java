@@ -55,7 +55,7 @@ public class SendMailServlet extends HttpServlet {
     
     public void init() throws ServletException {
 
-    	conn = DBConnection.getInstance().getConn();
+    	conn = DBConnection.getConn();
     	
     }
 

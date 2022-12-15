@@ -86,16 +86,15 @@ public class RegisterServlet extends HttpServlet {
 		} catch (InvalidKeySpecException e1) {
 			e1.printStackTrace();
 		}
-		
-		try {
 
-			// Checking if user already exists
-			if (DBAPI.getAccount(conn, email) == null) {
+		try {
+			
+			if (DBAPI.getAccount(conn, email) != null) {
 				System.out.println("Email already registered!");
 				response.sendRedirect("register.html");
 				return;
 			}
-			
+
 			/*
 			 * Encodes the publickey to a byte array to store it in the database.
 			 * TODO: save in bytes or save in a string?
