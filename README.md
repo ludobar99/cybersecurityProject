@@ -27,10 +27,10 @@ The application consists of three components:
 
 # Environment setup
 
-####Java version
+#### Java version
 1. Install Java JDK 11
 
-####Eclipse setup
+#### Eclipse setup
 1. Install Eclipse latest version (currently 2021-12)
 
 2. Go to Help -> Install new software... -> Work with: "Latest Eclipse Simultaneous Release - https://download.eclipse.org/releases/latest"
@@ -60,7 +60,7 @@ The application consists of three components:
 
 6) Restart Eclipse
 
-####Tomcat server setup
+#### Tomcat server setup
 1. Go to Window -> Preferences -> Server -> Runtime Environments -> Add... -> Apache -> Apache Tomcat v10.0 -> Thick 'Create new a local server' -> Next
 
 2. Click 'Download and install...', that should install the latest stable version (currently 10.0.13) -> Choose your favourite folder for Tomcat installation
