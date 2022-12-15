@@ -71,7 +71,7 @@ The application consists of three components:
 
 #### Import the project from github 
 
-1. Download the project from GitHub link "https://github.com/francxx96/ExamProject"
+1. Download the project from GitHub link "https://github.com/ludobar99/cybersecurityProject.git"
 
 2. Import it with Eclipse
 
