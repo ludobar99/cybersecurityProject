@@ -88,13 +88,16 @@ docker-compose -f docker-compose.dev.yml up
 ``` 
 
 2. Download DBeaver (Windows has an app in the Marketplace)
+
 3. In DBeaver create a connection to SQL Server DB; go to Database -> New Database Connection -> Search for 'SQL Server' -> Insert a username and password -> Click Finish
+
 4. Under 'master', create a new DB by right-clicking on 'Databases' with name "examDB"
+
 5. Create the DB tables used in the exam project. 
 Right click on the newly created DB -> SQL Editor -> New SQL Script
 Copy-Paste the SQL script in sqlScript.txt file -> Right click on the editor -> Execute -> Execute SQL Script
 
---- Now you are ready to populate databases and/or run the Java web application ---
+--- Now you are ready to populate databases and run the Java web application ---
 
 # Testing environment
 
