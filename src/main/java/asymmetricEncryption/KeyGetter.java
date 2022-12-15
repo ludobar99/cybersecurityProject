@@ -24,9 +24,9 @@ public class KeyGetter {
 	 * Gets the public key corresponding to the email in the database. If the email
 	 * doesn't correspond to any public key, returns null.
 	 */
-	public static byte[] getPublicKeyBytes(Connection conn, String email) throws SQLException {
+	public static byte[] getPublicKeyBytes(String email) throws SQLException {
 		
-		byte[] publicKeyBytes = DBAPI.getPublicKey(conn, email);
+		byte[] publicKeyBytes = DBAPI.getPublicKey(email);
 		
 		return publicKeyBytes;
 		

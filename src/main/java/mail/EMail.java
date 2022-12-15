@@ -9,6 +9,7 @@ public class EMail {
 	private String timestamp;
 	
 	private String sender;
+	
 	public EMail(String sender, String receiver, byte[] subject, byte[] body, String timestamp) {
 		super();
 		this.sender = sender;

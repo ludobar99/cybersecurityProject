@@ -2,28 +2,17 @@ package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
-
 import org.apache.commons.text.StringEscapeUtils;
 
-import client.User;
 import database.DBAPI;
-import database.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import util.Hash;
-import util.Paths;
 import util.Validator;
 
 /**
@@ -32,8 +21,6 @@ import util.Validator;
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
-	private static Connection conn;
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -44,7 +31,6 @@ public class RegisterServlet extends HttpServlet {
     
     public void init() throws ServletException {
 
-    	conn = DBConnection.getConn();
 
     }
 
@@ -89,7 +75,7 @@ public class RegisterServlet extends HttpServlet {
 
 		try {
 			
-			if (DBAPI.getAccount(conn, email) != null) {
+			if (DBAPI.getAccount(email) != null) {
 				System.out.println("Email already registered!");
 				response.sendRedirect("register.html");
 				return;
@@ -97,9 +83,8 @@ public class RegisterServlet extends HttpServlet {
 
 			/*
 			 * Encodes the publickey to a byte array to store it in the database.
-			 * TODO: save in bytes or save in a string?
 			 */
-			DBAPI.registerUser(conn, name, surname, email, password, publicKey);
+			DBAPI.registerUser(name, surname, email, password, publicKey);
 			
 			/*
 			 *  After registration, redirects to login

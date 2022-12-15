@@ -6,15 +6,9 @@ import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Properties;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -26,7 +20,6 @@ import asymmetricEncryption.Encryptor;
 import asymmetricEncryption.FromBytesToKeyConverter;
 import asymmetricEncryption.KeyGetter;
 import database.DBAPI;
-import database.DBConnection;
 import digitalSignature.DigestGenerator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -42,9 +35,7 @@ import util.Validator;
 @WebServlet("/SendMailServlet")
 public class SendMailServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-	private static Connection conn;
-       
+	       
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -55,15 +46,9 @@ public class SendMailServlet extends HttpServlet {
     
     public void init() throws ServletException {
 
-    	conn = DBConnection.getConn();
     	
     }
 
-    /*
-     * TODO: ora il corpo e l'oggetto dell'e-mail vengono criptati nel server. 
-     * All'interno di navigation servlet, devo modificare il codice in modo tale che 
-     * questi payload vengano criptati sul lato client.
-     */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 
@@ -98,7 +83,7 @@ public class SendMailServlet extends HttpServlet {
 
 		// Checking receiver existence
 		try {
-			if (DBAPI.getAccount(conn, receiver) == null) {
+			if (DBAPI.getAccount(receiver) == null) {
 				System.out.println("Request receiver does not exist");
 				response.sendError(500, "Request receiver does not exist");
 				return;
@@ -142,7 +127,7 @@ public class SendMailServlet extends HttpServlet {
 			byte[] bodyBytes = body.getBytes();
 			byte[] subjectBytes = subject.getBytes();
 
-			DBAPI.sendEmail(conn, sender, receiver, subjectBytes, bodyBytes, encryptedDigest, timestamp);
+			DBAPI.sendEmail(sender, receiver, subjectBytes, bodyBytes, encryptedDigest, timestamp);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
