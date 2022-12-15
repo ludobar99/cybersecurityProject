@@ -53,7 +53,7 @@ public class ReceiversServlet extends HttpServlet {
 
         // Checking receiver existence
         try {
-            if (!DBAPI.checkIfUserExists(conn, email)) {
+            if (DBAPI.getAccount(conn, email) == null) {
                 System.out.println("Request receiver does not exist");
                 response.sendError(500, "Request receiver does not exist");
                 return;
