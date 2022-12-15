@@ -87,3 +87,7 @@ The application consists of three components:
 docker-compose -f docker-compose.dev.yml up
 ``` 
 
+
+# Testing environment
+
+# Vulnerabilities
