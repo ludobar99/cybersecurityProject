@@ -82,7 +82,7 @@ public class DBAPI {
 		
 		while (sqlRes.next()) {
 			
-			EMail email = new EMail(senderEmail, sqlRes.getString(1), sqlRes.getBytes(3), sqlRes.getBytes(4), sqlRes.getBytes(5), sqlRes.getString(6));
+			EMail email = new EMail(senderEmail, sqlRes.getString(2), sqlRes.getBytes(3), sqlRes.getBytes(4), sqlRes.getBytes(5), sqlRes.getString(6));
 			
 			inbox.add(email);
 		
