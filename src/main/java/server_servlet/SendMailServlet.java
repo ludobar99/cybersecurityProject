@@ -66,13 +66,18 @@ public class SendMailServlet extends HttpServlet {
 		String body = request.getParameter("body").replace("'", "''");
 		String timestamp = new Date(System.currentTimeMillis()).toInstant().toString();
 
+		String signature = request.getParameter("signature");
+		if (signature != null) {
+			signature = signature.replace("'", "''");
+		}
+
 		/*
 		 * sanitizing fields
 		 */
 		receiver = StringEscapeUtils.escapeHtml4(receiver);
 		subject = StringEscapeUtils.escapeHtml4(subject);
 		body = StringEscapeUtils.escapeHtml4(body);
-		timestamp = StringEscapeUtils.escapeHtml4(timestamp);
+		signature = StringEscapeUtils.escapeHtml4(signature);
 
 		// Validating receiver email
 		if (!Validator.validateEmail(receiver)) {
@@ -92,42 +97,17 @@ public class SendMailServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-		/*
-		 * If the user checks the digital signature check-box, a message digest is generated.
-		 */
-		byte[] encryptedDigest = null;
-
-		if (request.getParameter("digitalSignature") != null) {
-						 
-			try {
-				
-				byte[] digest = DigestGenerator.generateDigest(body);
-				
-				// encrypting digest with private key
-				PrivateKey privateKey = null;
-				try {
-					String sourcePath = getServletContext().getRealPath("/");
-					Path rootPath = Paths.getRootPath(sourcePath);
-
-					byte[] privateKeyBytes = KeyGetter.getPrivateKeyBytes(rootPath.toString(), receiver);
-					privateKey = FromBytesToKeyConverter.getPrivateKeyfromBytes(privateKeyBytes);
-				} catch (InvalidKeySpecException | IOException e) {
-					e.printStackTrace();
-				}
-				encryptedDigest = Encryptor.encrypt(digest, privateKey);
-				
-			
-			} catch (NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e2) {
-				e2.printStackTrace();
-			}
-		}
-		
 		// Saving database in email (sending)
 		try {
 			byte[] bodyBytes = body.getBytes();
 			byte[] subjectBytes = subject.getBytes();
 
-			DBAPI.sendEmail(sender, receiver, subjectBytes, bodyBytes, encryptedDigest, timestamp);
+			byte[] signatureBytes = null;
+			if (signature != null) {
+				signatureBytes = signature.getBytes();
+			}
+
+			DBAPI.sendEmail(sender, receiver, subjectBytes, bodyBytes, signatureBytes, timestamp);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

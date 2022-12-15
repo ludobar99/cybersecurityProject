@@ -161,6 +161,10 @@ body {
     height: min-content;
 }
 
+.hidden {
+    display: none;
+}
+
 
 
 

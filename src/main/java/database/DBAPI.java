@@ -116,7 +116,7 @@ public class DBAPI {
 	/*
 	 * Registers new user. Saves data in the database
 	 */
-	public static void registerUser(String name, String surname, String email, String password, String publicKey) throws SQLException {
+	public static void registerUser(String name, String surname, String email, String password, byte[] publicKey) throws SQLException {
 		Connection conn = DBConnection.getConn();
 		
 		PreparedStatement statement2 = conn.prepareStatement(
@@ -126,7 +126,7 @@ public class DBAPI {
 		statement2.setString(2, surname);
 		statement2.setString(3, email);
 		statement2.setString(4, password);	
-		statement2.setString(5, publicKey);
+		statement2.setBytes(5, publicKey);
 		statement2.execute();
 
 		

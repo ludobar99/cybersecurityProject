@@ -120,81 +120,30 @@ public class NavigationServlet extends HttpServlet {
 				
 				EMail currentEmail = inbox.get(i);
 
-				String sender = currentEmail.getSender();
-				String timestamp = currentEmail.getTimestamp();
 				byte[] subject = currentEmail.getSubject();
 				byte[] body = currentEmail.getBody();
+				byte[] signature = currentEmail.getDigitalSignature();
 
 				String subjectString = new String(subject);
 				String bodyString = new String(body);
+				String timestamp = currentEmail.getTimestamp();
+				String sender = currentEmail.getSender();
+
+				String signatureString = null;
+				if (signature != null) {
+					signatureString = new String(signature);
+				}
 
 				output.append("<div class='mail-inbox'><span>");
-				output.append("FROM:&emsp;" + sender + "&emsp;&emsp;AT:&emsp;" + timestamp);
+				output.append("FROM:&emsp;<span class='email-sender'>" + sender + "</span>&emsp;&emsp;AT:&emsp;" + timestamp);
 				output.append("</span>");
 				output.append("<br><b><span class=\"email-subject\">" + subjectString + "</span></b>\r\n");
 				output.append("<br><span class=\"email-body\">" + bodyString + "</span>");
-				
-				/*
-				 * checks if the email was digitally signed
-				 * 
-				 */
-				if (currentEmail.getDigitalSignature() != null && body != null) {
-					
-					byte[] senderPublicKeyBytes = KeyGetter.getPublicKeyBytes(sender);
-					byte[] digitalSignature = currentEmail.getDigitalSignature();
-					
-					// checking that the public key is not null
-					if (senderPublicKeyBytes != null) {
-					
-						/*
-						 * decrypting digest
-						 */
-						PublicKey senderPublicKey = null;
-						try {
-							senderPublicKey = FromBytesToKeyConverter.getPublicKeyFromBytes(senderPublicKeyBytes);
-						} catch (NoSuchAlgorithmException | InvalidKeySpecException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						
-						try {
-						
-							digitalSignature = Decryptor.decrypt(digitalSignature, senderPublicKey);
-							System.out.println(digitalSignature);
-						
-						} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException
-								| NoSuchPaddingException | NoSuchAlgorithmException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
-						/*
-						 *  generating digest and comparing it with the received one
-						 */
-						byte[] digest = null;
-						
-						try {
-							digest = DigestGenerator.generateDigest(bodyString);
-						} catch (NoSuchAlgorithmException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
-						if (Arrays.equals(digest, digitalSignature)) {
-						
-							output.append("\n" + sender + " digitally signed this email.");
-						
-						} else {
-					
-							output.append("\n" + sender + " digitally signed this email, but something went wrong.\n");
-							output.append(sender + " didn't sign this email or the content was altered.");
-					
-						}
-				
-					}
-				
+
+				if (signatureString != null) {
+					output.append("<span class='hidden'><span class=\"email-signature\">" + signatureString + "</span></span>");
 				}
-					
+
 				output.append("</div>\r\n");
 			}
 
@@ -229,7 +178,6 @@ public class NavigationServlet extends HttpServlet {
 		
 		return 
 				"<form id=\"submitForm\" class=\"form-resize\">\r\n"
-				+ "		<input type=\"hidden\" name=\"email\" value=\""+email+"\">\r\n"
 				+ "		<input class=\"single-row-input\" type=\"email\" name=\"receiver\" placeholder=\"Receiver\" required>\r\n"
 				+ "		<input class=\"single-row-input\" type=\"text\"  name=\"subject\" placeholder=\"Subject\" required>\r\n"
 				+ "		<textarea class=\"textarea-input\" name=\"body\" placeholder=\"Body\" wrap=\"hard\" rows='10' required></textarea>\r\n"

@@ -27,44 +27,155 @@
 			}
 			return buf;
 		}
+
+		// Retrieves private key for decryption
+		async function getDecryptionKey() {
+			const userEmail = '${email}'
+			const privateContents = window.localStorage.getItem(`email-client.private.` + userEmail)
+			const privateString = window.atob(privateContents);
+			const privateRsa = str2ab(privateString);
+			return await window.crypto.subtle.importKey(
+				"pkcs8",
+				privateRsa,
+				{
+					name: "RSA-OAEP",
+					hash: "SHA-256",
+				},
+				false,
+				["decrypt"]
+			)
+		}
+
+		// Retrieves private key for signing
+		async function getSigningKey() {
+			const userEmail = '${email}'
+			const privateContents = window.localStorage.getItem(`email-client.private.` + userEmail)
+			const privateString = window.atob(privateContents);
+			const privateRsa = str2ab(privateString);
+			return await window.crypto.subtle.importKey(
+				"pkcs8",
+				privateRsa,
+				{
+					name: "RSA-PSS",
+					hash: "SHA-256"
+				},
+				false,
+				["sign"]
+			)
+		}
+
+		// Fetches public key of user from backend and imports it for encryption
+		async function getEncryptionKey(email) {
+
+			// Fetching public key
+			const publicKeyResult = await fetch("ReceiversServlet?" + new URLSearchParams({
+				email
+			}), {
+				credentials: "same-origin"
+			})
+			if (!publicKeyResult.ok) throw Error("Error while fetching the public key of the receiver.")
+
+			// Importing received key
+			const publicKeyString = await publicKeyResult.text();
+			const publicString = window.atob(publicKeyString);
+			const publicAb = str2ab(publicString);
+			return await window.crypto.subtle.importKey(
+				"spki",
+				publicAb,
+				{
+					name: "RSA-OAEP",
+					hash: "SHA-256"
+				},
+				false,
+				["encrypt"]
+			);
+		}
+
+		// Fetches public key of user from backend and imports it for verification
+		async function getVerificationKey(email) {
+
+			// Fetching public key
+			const publicKeyResult = await fetch("ReceiversServlet?" + new URLSearchParams({
+				email
+			}), {
+				credentials: "same-origin"
+			})
+			if (!publicKeyResult.ok) throw Error("Error while fetching the public key of the receiver.")
+
+			// Importing received key
+			const publicKeyString = await publicKeyResult.text();
+			const publicString = window.atob(publicKeyString);
+			const publicAb = str2ab(publicString);
+			return await window.crypto.subtle.importKey(
+				"spki",
+				publicAb,
+				{
+					name: "RSA-PSS",
+					hash: "SHA-256"
+				},
+				false,
+				["verify"]
+			);
+		}
 	</script>
 	<script>
 		// Content decryption
 		window.addEventListener("load", async () => {
 
 			// Retrieving private key
-			const userEmail = '${email}'
-			const privateContents = window.localStorage.getItem(`email-client.private.` + userEmail)
-			const privateString = window.atob(privateContents);
-			const privateRsa = str2ab(privateString);
-			const privateKey = await window.crypto.subtle.importKey(
-					"pkcs8",
-					privateRsa,
-					{
-						name: "RSA-OAEP",
-						hash: "SHA-256"
-					},
-					true,
-					["decrypt"]
-			)
+			const privateKey = await getDecryptionKey();
 
 			// Decrypting received contents
-			const elements = document.querySelectorAll(".email-subject, .email-body");
-			for (const element of elements) {
-				const contentEncryptedBase64 = element.innerHTML
-				const contentEncrypted = window.atob(contentEncryptedBase64);
-				const contentDecrypted = await window.crypto.subtle.decrypt(
-						{
-							name: "RSA-OAEP",
-							hash: "SHA-256"
-						},
-						privateKey,
-						str2ab(contentEncrypted)
-				)
-				// Sanitizing
-				var sanitizedContent = DOMPurify.sanitize(contentDecrypted);
-				
-				element.innerHTML = ab2str(sanitizedContent);
+			const mails = document.getElementsByClassName("mail-inbox");
+			for (const mail of mails) {
+
+				// Verifies signature if present
+				const signatureElements = mail.getElementsByClassName("email-signature")
+				let signature, publicKey;
+				if (signatureElements.length > 0) {
+
+					// 	Gets sender email
+					const senderElements = mail.getElementsByClassName("email-sender")
+					const sender = senderElements.item(0).innerHTML;
+
+					// Setting properties
+					publicKey = await getVerificationKey(sender);
+					signature = signatureElements.item(0).innerHTML
+				}
+
+				const elements = mail.querySelectorAll(".email-body")
+				for (const element of elements) {
+					const contentEncryptedBase64 = element.innerHTML
+					const contentEncrypted = window.atob(contentEncryptedBase64);
+					const contentDecrypted = await window.crypto.subtle.decrypt(
+							{
+								name: "RSA-OAEP",
+								hash: "SHA-256"
+							},
+							privateKey,
+							str2ab(contentEncrypted)
+					)
+					// Sanitizing
+					const sanitizedContent = DOMPurify.sanitize(ab2str(contentDecrypted));
+					element.innerHTML = sanitizedContent;
+
+					// Verifies signature
+					if (signature && publicKey) {
+						const result = window.crypto.subtle.verify(
+							{
+								name: "RSA-PSS",
+								saltLength: 32,
+							},
+							publicKey,
+							signature,
+							str2ab(contentEncryptedBase64)
+						)
+						if (!result) continue;
+						element.innerHTML = element.innerHTML
+								+ "<br><br>&#9989 This email was signed by the sender"
+
+					}
+				}
 			}
 		})
 	</script>
@@ -77,56 +188,42 @@
 				// Retrieving generic data
 				const formData = new FormData(form);
 				const receiver = formData.get("receiver");
+				const emailBody = formData.get("body");
 				const digitalSignature = formData.get("digitalSignature");
 
 				// Fetching receiver public key
-				const publicKeyResult = await fetch("ReceiversServlet?" + new URLSearchParams({
-					email: receiver
-				}), {
-					credentials: "same-origin"
-				})
-				if (!publicKeyResult.ok) throw Error("Error while fetching the public key of the receiver.")
+				const publicKey = await getEncryptionKey(receiver);
 
-				// Importing received key
-				const publicKeyText = await publicKeyResult.text();
-				const publicString = window.atob(publicKeyText);
-				const publicAb = str2ab(publicString);
-				const publicKey = await window.crypto.subtle.importKey(
-						"spki",
-						publicAb,
-						{
-							name: "RSA-OAEP",
-							hash: "SHA-256"
-						},
-						true,
-						["encrypt"]
-				);
+				// Generating signature if digitalSignature is true
+				if (digitalSignature) {
+					const privateKey = await getSigningKey();
+					const emailBodyEncoded = window.btoa(emailBody);
+					const signature = await window.crypto.subtle.sign(
+							{
+								name: "RSA-PSS",
+								saltLength: 32,
+							},
+							privateKey,
+							str2ab(emailBodyEncoded)
+					);
+
+					// Adding signature to form data
+					const signatureBase64 = window.btoa(ab2str(signature));
+					formData.set("signature", signatureBase64);
+				}
 
 				// Content encryption
-				const emailBody = formData.get("body");
 				const encryptedBody = await window.crypto.subtle.encrypt(
-						{
-							name: "RSA-OAEP",
-						},
-						publicKey,
-						str2ab(emailBody)
-				)
-
-				const emailSubject = formData.get("subject");
-				const encryptedSubject = await window.crypto.subtle.encrypt(
-						{
-							name: "RSA-OAEP",
-						},
-						publicKey,
-						str2ab(emailSubject)
+					{
+						name: "RSA-OAEP",
+					},
+					publicKey,
+					str2ab(emailBody)
 				)
 
 				// Encoding content and overwriting form data
 				const encryptedBodyBase64 = window.btoa(ab2str(encryptedBody))
-				const encryptedSubjectBase64 = window.btoa(ab2str(encryptedSubject))
-
 				formData.set("body", encryptedBodyBase64);
-				formData.set("subject", encryptedSubjectBase64);
 
 				// Sending email
 				const sendMailResult = await fetch("SendMailServlet?" + new URLSearchParams(formData), {

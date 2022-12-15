@@ -84,7 +84,8 @@ public class RegisterServlet extends HttpServlet {
 			/*
 			 * Encodes the publickey to a byte array to store it in the database.
 			 */
-			DBAPI.registerUser(name, surname, email, password, publicKey);
+			byte[] publicKeyBytes = publicKey.getBytes();
+			DBAPI.registerUser(name, surname, email, password, publicKeyBytes);
 			
 			/*
 			 *  After registration, redirects to login
