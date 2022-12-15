@@ -97,7 +97,7 @@ docker-compose -f docker-compose.dev.yml up
 Right click on the newly created DB -> SQL Editor -> New SQL Script
 Copy-Paste the SQL script in sqlScript.txt file -> Right click on the editor -> Execute -> Execute SQL Script
 
---- Now you are ready to populate databases and run the Java web application ---
+Now you are ready to populate databases and run the Java web application!
 
 # Testing environment
 
