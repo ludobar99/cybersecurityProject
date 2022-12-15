@@ -53,7 +53,7 @@ public class ReceiversServlet extends HttpServlet {
 
         // Checking receiver existence
         try {
-            if (DBAPI.getAccount(conn, email) == null) {
+            if (DBAPI.getAccount(email) == null) {
                 System.out.println("Request receiver does not exist");
                 response.sendError(500, "Request receiver does not exist");
                 return;
@@ -64,7 +64,7 @@ public class ReceiversServlet extends HttpServlet {
 
         // Sending back requested key
         try {
-            byte[] receiverPublicKeyBytes = KeyGetter.getPublicKeyBytes(conn, email);
+            byte[] receiverPublicKeyBytes = KeyGetter.getPublicKeyBytes(email);
 
             response.getOutputStream().write(receiverPublicKeyBytes);
             response.getOutputStream().flush();

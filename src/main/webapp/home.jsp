@@ -61,7 +61,10 @@
 						privateKey,
 						str2ab(contentEncrypted)
 				)
-				element.innerHTML = ab2str(contentDecrypted);
+				// Sanitizing
+				var sanitizedContent = DOMPurify.sanitize(contentDecrypted);
+				
+				element.innerHTML = ab2str(sanitizedContent);
 			}
 		})
 	</script>
