@@ -135,12 +135,11 @@ public class NavigationServlet extends HttpServlet {
 				
 				EMail currentEmail = inbox.get(i);
 				            
-			
 				String _emailSender = currentEmail.getSender();
 				byte[] _encryptedSubject = currentEmail.getSubject();
 				byte[] _encryptedBody = currentEmail.getBody();
 				byte[] _digitalSignature = currentEmail.getDigitalSignature();
-				String _timestamp;
+				String _timestamp = currentEmail.getTimestamp();
 				String _body = null;
 				String _subject = null;
 
@@ -201,7 +200,7 @@ public class NavigationServlet extends HttpServlet {
 				_emailSender = StringEscapeUtils.escapeHtml4(_emailSender);
 				_body = StringEscapeUtils.escapeHtml4(_body);
 				_subject = StringEscapeUtils.escapeHtml4(_subject);
-				_timestamp = StringEscapeUtils.escapeHtml4(currentEmail.getTimestamp());
+				_timestamp = StringEscapeUtils.escapeHtml4(_timestamp);
 				
 				
 				output.append("<div class='mail-inbox'><span>");
@@ -270,7 +269,7 @@ public class NavigationServlet extends HttpServlet {
 					
 						}
 				
-					}
+					} else  {System.out.println("Error getting public key of " + email);}
 				
 				}
 					

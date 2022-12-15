@@ -94,7 +94,7 @@ public class RegisterServlet extends HttpServlet {
 		
 		try {
 			
-			if (DBAPI.checkIfUserExists(conn, email)) {
+			if (DBAPI.getAccount(conn, email) != null) {
 				System.out.println("Email already registered!");
 				response.sendRedirect("register.html");
 				return;

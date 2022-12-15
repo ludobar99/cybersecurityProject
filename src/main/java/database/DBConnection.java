@@ -19,15 +19,15 @@ public class DBConnection {
 	/*
 	 * Connecting with the database.
 	 * The method uses the variables specified in the .env file.
-	 * TODO: soluzione per la path brutta, da rivedere
 	 */
 	private DBConnection() {
 	
 		/*
 		 * checks if .env file exists. If not, generateEnv script must run with right path
-		 * 1. copy the path printed from the program
+		 * 0. run the application
+		 * 1. copy the path printed from the app on the console
 		 * 2. update your generateEnv file with the right path
-		 * 3. run the script in your teminal
+		 * 3. run the script (generateEnv.sh/generateEv.bat) in your teminal
 		 */
 		 String currentDir = System.getProperty("user.dir");
 		 File f = new File(currentDir + "/.env");

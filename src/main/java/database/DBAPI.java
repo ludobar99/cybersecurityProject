@@ -1,6 +1,5 @@
 package database;
 
-import java.security.PublicKey;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -105,27 +104,6 @@ public class DBAPI {
 		
 	}
 	
-	/*
-	 * Checks if the user exists
-	 */
-	public static boolean checkIfUserExists(Connection conn, String email) throws SQLException {
-		
-		PreparedStatement statement = conn.prepareStatement("SELECT * FROM [user] WHERE email=?");
-		statement.setString(1, email);
-		ResultSet sqlRes = statement.executeQuery();
-		
-		/*
-		 * Only one account per email can be created
-		 * TODO: unique_key / primary_key database
-		 */
-		if (sqlRes.next()) {
-			return true;
-		} 
-			
-		return false;
-
-		
-	}
 
 	/*
 	 * Registers new user. Saves data in the database
