@@ -69,7 +69,7 @@ The application consists of three components:
 
 # Project setup
 
-#### Import the project from github 
+#### Import the project from GitHub 
 
 1. Download the project from GitHub link "https://github.com/ludobar99/cybersecurityProject.git"
 
