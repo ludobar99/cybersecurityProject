@@ -3,7 +3,7 @@ CREATE TABLE [user] (
 	surname varchar(50) NOT NULL,
 	email varchar(50) NOT NULL,
 	password varchar(170) NOT NULL,
-	publickey varbinary(250) NOT NULL,
+	publickey varchar(250) NOT NULL,
 	CONSTRAINT user_PK PRIMARY KEY (email)
 );
 
