@@ -40,25 +40,25 @@ The application consists of three components:
 4. Check the following elements:
 
 	
-* Eclipse Java EE Developer Tools
+	* Eclipse Java EE Developer Tools
 	
-* Eclipse Java Web Developer Tools
+	* Eclipse Java Web Developer Tools
 	
-* Eclipse Java Web Developer Tools - JavaScript Support
+	* Eclipse Java Web Developer Tools - JavaScript Support
 	
-* Eclipse Web Developer Tools
+	* Eclipse Web Developer Tools
 	
-* Eclipse Web JavaScript Developer Tools
+	* Eclipse Web JavaScript Developer Tools
 	
-* JST Server Adapters
+	* JST Server Adapters
 	
-* JST Server Adapters Extension (Apache Tomcat)
+	* JST Server Adapters Extension (Apache Tomcat)
 
 
 	
-5) Click Next two times, then accept the licence and click Finish
+5. Click Next two times, then accept the licence and click Finish
 
-6) Restart Eclipse
+6. Restart Eclipse
 
 #### Tomcat server setup
 1. Go to Window -> Preferences -> Server -> Runtime Environments -> Add... -> Apache -> Apache Tomcat v10.0 -> Thick 'Create new a local server' -> Next
@@ -71,13 +71,13 @@ The application consists of three components:
 
 #### Import the project from github 
 
-1) Download the project from GitHub link "https://github.com/francxx96/ExamProject"
+1. Download the project from GitHub link "https://github.com/francxx96/ExamProject"
 
-2) Import it with Eclipse
+2. Import it with Eclipse
 
 3. Right click -> convert project in Maven project
 
-3) Right click on the project -> Properties -> Deployment Assembly -> ***add maven***
+4. Right click on the project -> Properties -> Deployment Assembly -> ***add maven***
 
 #### Database setup
 
