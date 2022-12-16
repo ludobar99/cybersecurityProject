@@ -13,8 +13,8 @@ Reuqired environment variables and defaults
 
 ```env
 ACCEPT_EULA=Y
-DB_USER=sa
-SA_PASSWORD=Strong.Pwd-123
+DB_USER=<username>
+SA_PASSWORD=<password>
 DRIVER_CLASS=com.microsoft.sqlserver.jdbc.SQLServerDriver
 DB_URL="jdbc:sqlserver://localhost:1433;databaseName=examDB;encrypt=true;trustServerCertificate=true;"
 ```
@@ -85,10 +85,11 @@ The application consists of three components:
 mvn clean install package
 ``` 
 
-4. Right click on the project -> Properties -> Deployment Assembly -> ***add maven***
-
 #### Generate .env file
 
+1. Create a .env file as described in the top of this document in the project directory
+
+> **_NOTE:_**  a ready .env.example file has been provided for convenience
 
 #### Database setup
 
@@ -100,7 +101,7 @@ docker-compose -f docker-compose.dev.yml up
 
 2. Download DBeaver (Windows has an app in the Marketplace)
 
-3. In DBeaver create a connection to SQL Server DB; go to Database -> New Database Connection -> Search for 'SQL Server' -> Insert a username and password -> Click Finish
+3. In DBeaver create a connection to SQL Server DB; go to Database -> New Database Connection -> Search for 'SQL Server' -> Insert DB_USER as username and SA_PASSWORD as password -> Click Finish
 
 4. Under 'master', create a new DB by right-clicking on 'Databases' with name "examDB"
 
