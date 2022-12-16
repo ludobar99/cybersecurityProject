@@ -25,13 +25,16 @@ The application consists of three components:
 - A client-side (Google Chrome browser)
 - A MSSQL database (running in a Docker container)
 
-# Environment setup
+## System Requirements
+- Java JDK 11
+- Docker/Docker Compose  >20.10
+- Google Chrome >105
+- Eclipse >2021-12
 
-#### Java version
-1. Install Java JDK 11
+## Environment setup
 
 #### Eclipse setup
-1. Install Eclipse latest version (currently 2021-12)
+1. Install Eclipse
 
 2. Go to Help -> Install new software... -> Work with: "Latest Eclipse Simultaneous Release - https://download.eclipse.org/releases/latest"
 
@@ -109,9 +112,7 @@ docker-compose -f docker-compose.dev.yml up
 Right click on the newly created DB -> SQL Editor -> New SQL Script
 Copy-Paste the SQL script in sqlScript.txt file -> Right click on the editor -> Execute -> Execute SQL Script
 
-Now you are ready to populate databases and run the Java web application!
-
-## Testing environment
+Now you are ready to run the Java web application! Send emails to your friends. >:(
 
 ## Security Considerations
 
