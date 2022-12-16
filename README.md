@@ -75,7 +75,13 @@ The application consists of three components:
 
 2. Import it with Eclipse
 
-3. Right click -> convert project in Maven project
+3. Right click ->  click on "Convert to Maven Project"
+
+4. Run the following command in the project directory (where the pom.xml file is)
+
+```shell
+mvn clean install package
+``` 
 
 4. Right click on the project -> Properties -> Deployment Assembly -> ***add maven***
 
