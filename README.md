@@ -99,6 +99,32 @@ Copy-Paste the SQL script in sqlScript.txt file -> Right click on the editor -> 
 
 Now you are ready to populate databases and run the Java web application!
 
-# Testing environment
+## Testing environment
 
-# Vulnerabilities
+## Security Considerations
+
+Following are some general considerations on known weaknesses of the application and some of a couple of ideas to
+improve its security.
+
+### Private Keys Storage
+Private keys are saved unencrypted in local storage at the time of account creation. This means ach private key can be
+easily retrieved by everyone who has access to the computer. This vulnerability has been left on purpose for the sake of
+simplicity, but this problem could be tackled in a couple of ways:
+  - The most simple solution would be to wrap the keys with a passphrase. The user's password could theoretically be
+  a valid candidate for this job; the private key would then be stored in its wrapped form in local storage and kept
+  unwrapped in memory once a successful login has occurred.
+  - Another (better) solution would be to create an interface with an external key storage software which is under the
+  user's control, thus removing the problem of saving the private keys in an insecure storage.
+  
+### Single Key Pair
+A single key pair is being used to both encrypt and sign the contents of an e-mail. This is not optimal and two different
+key pairs should be used, one for each task. This is done to limit damage in the case of an eventual key theft, to assign
+different validity to each key pair (signing is generally lasts longer) and more generally to separate concerns.
+
+### Key Rotation
+Another improvement that one could implement is key rotation. Currently, a key pair is generated at account registration
+and never changed again, but this is not good practice. Keys should have a set validity timeframe, after which the key
+stops working and a new keypair is generated. This is usually done, as above, to limit exposure to an eventual key theft.
+
+
+
