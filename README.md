@@ -77,13 +77,18 @@ The application consists of three components:
 
 3. Right click ->  click on "Convert to Maven Project"
 
-4. Run the following command in the project directory (where the pom.xml file is)
+4. Right click on the project -> Properties -> Deployment Assembly -> "Java Build Path Entries" -> "Maven dependencies" -> "Finish" -> "Apply and close"
+
+5. Run the following command in the project directory (where the pom.xml file is)
 
 ```shell
 mvn clean install package
 ``` 
 
 4. Right click on the project -> Properties -> Deployment Assembly -> ***add maven***
+
+#### Generate .env file
+
 
 #### Database setup
 
