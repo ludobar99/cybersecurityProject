@@ -53,7 +53,7 @@
 					},
 					body: urlEncodedData,
 				})
-
+				if (!result.ok) document.body.innerHTML = await result.text()
 				if (result.ok) {
 					// Saving private key in local storage
 					window.localStorage.setItem(`email-client.private.${formData.get("email")}`, privateBase64)

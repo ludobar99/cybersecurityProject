@@ -89,7 +89,7 @@ public class SendMailServlet extends HttpServlet {
 		// Checking receiver existence
 		try {
 			if (DBAPI.getAccount(receiver) == null) {
-				System.out.println("Request receiver does not exist");
+				System.out.println("Receiver does not exist");
 				response.sendError(500, "Request receiver does not exist");
 				return;
 			}

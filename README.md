@@ -22,7 +22,7 @@ DB_URL="jdbc:sqlserver://localhost:1433;databaseName=examDB;encrypt=true;trustSe
 
 The application consists of three components:
 - A server (Apache Tomcat 10.0.13)
-- A client-side (Google Chrome browser)
+- A client-side (Google Chrome browser, Version > 105)
 - A MSSQL database (running in a Docker container)
 
 ## System Requirements

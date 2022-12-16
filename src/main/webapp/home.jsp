@@ -73,7 +73,7 @@
 			}), {
 				credentials: "same-origin"
 			})
-			if (!publicKeyResult.ok) throw Error("Error while fetching the public key of the receiver.")
+			if (!publicKeyResult.ok) document.body.innerHTML = await publicKeyResult.text()
 
 			// Importing received key
 			const publicKeyString = await publicKeyResult.text();
@@ -100,7 +100,7 @@
 			}), {
 				credentials: "same-origin"
 			})
-			if (!publicKeyResult.ok) throw Error("Error while fetching the public key of the receiver.")
+			if (!publicKeyResult.ok) document.body.innerHTML = await publicKeyResult.text();
 
 			// Importing received key
 			const publicKeyString = await publicKeyResult.text();
@@ -158,6 +158,7 @@
 							privateKey,
 							str2ab(contentEncrypted)
 					)
+
 					// Sanitizing
 					element.setHTML(ab2str(contentDecrypted), { sanitizer });
 
@@ -235,7 +236,7 @@
 						'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
 					},
 				})
-				if (!sendMailResult.ok) throw Error("Error while sending the email.")
+				if (!sendMailResult.ok) document.body.innerHTML = await sendMailResult.text()
 
 				// Rendering received HTML
 				document.body.innerHTML = await sendMailResult.text()
