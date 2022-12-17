@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import jakarta.servlet.http.HttpSession;
-import mail.EMail;
+import models.EMail;
 
 import org.apache.commons.text.StringEscapeUtils;
 

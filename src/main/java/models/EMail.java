@@ -1,4 +1,4 @@
-package mail;
+package models;
 
 public class EMail {
 

@@ -7,12 +7,12 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import org.apache.commons.text.StringEscapeUtils;
 
-import client.User;
 import database.DBAPI;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import models.User;
 import util.CSRFToken;
 import util.Hash;
 import util.SessionManager;

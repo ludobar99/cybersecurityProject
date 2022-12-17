@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import client.User;
-import mail.EMail;
+import models.EMail;
+import models.User;
 
 public class DBAPI {
 	
