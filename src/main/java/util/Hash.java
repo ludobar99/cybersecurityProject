@@ -51,7 +51,7 @@ public class Hash {
 	 * Checks correctness of the password. It generates an hash from the input password and 
 	 * compares it with the password in the database.
 	 */
-	public static boolean validatePassword(String password, String hashedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	public static boolean checkPassword(String password, String hashedPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		   
 			String[] parts = hashedPassword.split(":");
 		    int iterations = Integer.parseInt(parts[0]);

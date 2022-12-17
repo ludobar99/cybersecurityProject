@@ -80,7 +80,7 @@ public class LoginServlet extends HttpServlet {
 			 * and compares it with the hash in the database
 			 * 
 			 */
-			if (!Hash.validatePassword(pwd, user.getPassword())) {
+			if (!Hash.checkPassword(pwd, user.getPassword())) {
 				System.out.println("Login failed!");
 				request.getRequestDispatcher("login.html").forward(request, response);
 				return;
@@ -100,10 +100,8 @@ public class LoginServlet extends HttpServlet {
 			e.printStackTrace();
 			request.getRequestDispatcher("login.html").forward(request, response);}
 		catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
