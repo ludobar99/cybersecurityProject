@@ -214,7 +214,6 @@ public class NavigationServlet extends HttpServlet {
 				_timestamp = StringEscapeUtils.escapeHtml4(_timestamp);
 				String _sanitizedSubject = StringEscapeUtils.escapeHtml4(new String(_subject));
 				
-				
 				output.append("<div class='mail-sent'><span>");
 				output.append("TO:&emsp;" + _emailReceiver + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
