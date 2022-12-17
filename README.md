@@ -79,7 +79,7 @@ The application consists of three components:
 
 2. Import it with Eclipse
 
-3. Right click ->  click on "Convert to Maven Project"
+3. Right click -> Configure -> Convert to Maven Project
 
 4. Right click on the project -> Properties -> Deployment Assembly -> "Java Build Path Entries" -> "Maven dependencies" -> "Finish" -> "Apply and close"
 
