@@ -52,6 +52,18 @@ public class NavigationServlet extends HttpServlet {
 			return;
 		}
 		String user = SessionManager.getSessionUser(session);
+
+		// CSRF Check
+		String sessionCSRFToken = null;
+		try {
+			sessionCSRFToken = SessionManager.getCSRFToken(session);
+			String requestCSRFToken = request.getParameter("csrfToken");
+			System.out.println(sessionCSRFToken + " " + requestCSRFToken);
+			if (!sessionCSRFToken.equals(requestCSRFToken)) throw new Exception("CSRF Tokens do not match!");
+		} catch (Exception error) {
+			response.sendError(403, "CSRF Token error");
+			return;
+		}
 		
 		/*
 		 * validating user
@@ -69,7 +81,7 @@ public class NavigationServlet extends HttpServlet {
 					
 		
 		if (request.getParameter("newMail") != null)
-			request.setAttribute("content", getHtmlForNewMail(user));
+			request.setAttribute("content", getHtmlForNewMail(user, sessionCSRFToken));
 
 		else if (request.getParameter("inbox") != null)
 			request.setAttribute("content", getHtmlForInbox(user));
@@ -83,6 +95,7 @@ public class NavigationServlet extends HttpServlet {
 		}
 	
 		request.setAttribute("email", user);
+		request.setAttribute("csrfToken", sessionCSRFToken);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
 	}
 
@@ -153,7 +166,7 @@ public class NavigationServlet extends HttpServlet {
 	}
 	
 	
-	private String getHtmlForNewMail(String email) {
+	private String getHtmlForNewMail(String email, String sessionCSRFToken) {
 		/*
 		 * Validating email
 		 */
@@ -161,15 +174,10 @@ public class NavigationServlet extends HttpServlet {
 			System.out.println("Invalid email");
 			return "";
 		}
-		
-		/*
-		 * Sanitizing email
-		 */
-		email = StringEscapeUtils.escapeHtml4(email);
 
-		
 		return 
 				"<form id=\"submitForm\" class=\"form-resize\">\r\n"
+				+ "		<input type=\"hidden\" name=\"csrfToken\" value=\""+ sessionCSRFToken +"\">\r\n"
 				+ "		<input class=\"single-row-input\" type=\"email\" name=\"receiver\" placeholder=\"Receiver\" required>\r\n"
 				+ "		<input class=\"single-row-input\" type=\"text\"  name=\"subject\" placeholder=\"Subject\" required>\r\n"
 				+ "		<textarea class=\"textarea-input\" name=\"body\" placeholder=\"Body\" wrap=\"hard\" rows='10' required></textarea>\r\n"
@@ -193,10 +201,12 @@ public class NavigationServlet extends HttpServlet {
 			output.append("<div>\r\n");
 			
 			for (int i = 0; i < sentEmail.size(); i++) {
-				
+
+				byte[] _subjectBytes = sentEmail.get(i).getSubject();
+				byte[] _bodyBytes = sentEmail.get(i).getBody();
+				String _body = new String(_bodyBytes);
+				String _subject = new String(_subjectBytes);
 				String _emailReceiver = sentEmail.get(i).getReceiver();
-				byte[] _subject = sentEmail.get(i).getSubject();
-				byte[] _body = sentEmail.get(i).getBody();
 				String _timestamp = sentEmail.get(i).getTimestamp();
 				
 				/*

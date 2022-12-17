@@ -59,6 +59,18 @@ public class SendMailServlet extends HttpServlet {
 		}
 		String sender = SessionManager.getSessionUser(session);
 
+		// CSRF Check
+		String sessionCSRFToken = null;
+		try {
+			sessionCSRFToken = SessionManager.getCSRFToken(session);
+			String requestCSRFToken = request.getParameter("csrfToken");
+			System.out.println(sessionCSRFToken + " " + requestCSRFToken);
+			if (!sessionCSRFToken.equals(requestCSRFToken)) throw new Exception("CSRF Tokens do not match!");
+		} catch (Exception error) {
+			response.sendError(403, "CSRF Token error");
+			return;
+		}
+
 		// Extracting data from request
 		String receiver = request.getParameter("receiver").replace("'", "''");
 		String subject = request.getParameter("subject").replace("'", "''");
@@ -112,6 +124,7 @@ public class SendMailServlet extends HttpServlet {
 		}
 
 		request.setAttribute("email", sender);
+		request.setAttribute("csrfToken", sessionCSRFToken);
 		request.getRequestDispatcher("home.jsp").forward(request, response);
 	}
 	
