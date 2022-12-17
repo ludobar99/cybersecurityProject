@@ -2,27 +2,14 @@ package server_servlet;
 
 import jakarta.servlet.http.HttpServlet;
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
 import jakarta.servlet.http.HttpSession;
 import mail.EMail;
 
 import org.apache.commons.text.StringEscapeUtils;
 
-import asymmetricEncryption.Decryptor;
-import asymmetricEncryption.FromBytesToKeyConverter;
-import asymmetricEncryption.KeyGetter;
 import database.DBAPI;
-import digitalSignature.DigestGenerator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -129,6 +116,11 @@ public class NavigationServlet extends HttpServlet {
 				String timestamp = currentEmail.getTimestamp();
 				String sender = currentEmail.getSender();
 
+				/*
+				 * sanitizing subject
+				 */
+				subjectString = StringEscapeUtils.escapeHtml4(subjectString);
+				
 				String signatureString = null;
 				if (signature != null) {
 					signatureString = new String(signature);
@@ -220,11 +212,13 @@ public class NavigationServlet extends HttpServlet {
 				 */
 				_emailReceiver = StringEscapeUtils.escapeHtml4(_emailReceiver);
 				_timestamp = StringEscapeUtils.escapeHtml4(_timestamp);
+				String _sanitizedSubject = StringEscapeUtils.escapeHtml4(new String(_subject));
+				
 				
 				output.append("<div class='mail-sent'><span>");
 				output.append("TO:&emsp;" + _emailReceiver + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
-				output.append("<br><b>" + _subject + "</b>\r\n");
+				output.append("<br><b>" + _sanitizedSubject + "</b>\r\n");
 				output.append("<br>" + _body);
 				output.append("</div>\r\n");
 			}
