@@ -150,7 +150,7 @@
 				for (const element of elements) {
 					const contentEncryptedBase64 = element.innerHTML
 					const contentEncrypted = window.atob(contentEncryptedBase64);
-					const contentDecrypted = await window.crypto.subtle.decrypt(
+					const contentDecryptedBase64 = await window.crypto.subtle.decrypt(
 							{
 								name: "RSA-OAEP",
 								hash: "SHA-256"
@@ -159,8 +159,11 @@
 							str2ab(contentEncrypted)
 					)
 
+					// Decoding
+					const contentDecrypted = window.atob(ab2str(contentDecryptedBase64));
+
 					// Sanitizing
-					element.setHTML(ab2str(contentDecrypted), { sanitizer });
+					element.setHTML(contentDecrypted, { sanitizer });
 
 					// Verifies signature
 					if (signature && publicKey) {
@@ -215,14 +218,18 @@
 					formData.set("signature", signatureBase64);
 				}
 
-				// Content encryption
+				console.log("hello")
+
+				const bodyBase64 = window.btoa(emailBody)
 				const encryptedBody = await window.crypto.subtle.encrypt(
 					{
 						name: "RSA-OAEP",
 					},
 					publicKey,
-					str2ab(emailBody)
+					str2ab(bodyBase64)
 				)
+
+				console.log("helooo")
 
 				// Encoding content and overwriting form data
 				const encryptedBodyBase64 = window.btoa(ab2str(encryptedBody))
