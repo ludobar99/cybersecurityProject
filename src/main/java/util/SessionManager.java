@@ -16,6 +16,10 @@ public class SessionManager {
 		session.setAttribute("user", email);
 	
 	}
+
+	public static void setCSRFToken(HttpSession session, String token) {
+		session.setAttribute("csrfToken", token);
+	}
 	
 	
 	/*
@@ -36,5 +40,8 @@ public class SessionManager {
 		return (String) session.getAttribute("user");
 	}
 
-
+	public static String getCSRFToken(HttpSession session) throws Exception {
+		if (session.getAttribute("csrfToken") == null) throw new Exception("Missing token");
+		return (String) session.getAttribute("csrfToken");
+	}
 }

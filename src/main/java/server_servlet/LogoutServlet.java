@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import util.SessionManager;
 
 /**
  * Servlet implementation class LogoutServlet
@@ -26,6 +28,26 @@ public class LogoutServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		// Session check
+		HttpSession session = request.getSession(false);
+		if (session == null) {
+			response.sendRedirect("login.html");
+			return;
+		}
+		String user = SessionManager.getSessionUser(session);
+
+		// CSRF Check
+		String sessionCSRFToken = null;
+		try {
+			sessionCSRFToken = SessionManager.getCSRFToken(session);
+			String requestCSRFToken = request.getParameter("csrfToken");
+			System.out.println(sessionCSRFToken + " " + requestCSRFToken);
+			if (!sessionCSRFToken.equals(requestCSRFToken)) throw new Exception("CSRF Tokens do not match!");
+		} catch (Exception error) {
+			response.sendError(403, "CSRF Token error");
+			return;
+		}
 		
 		/*
 		 * invalidates user session and returns to login page

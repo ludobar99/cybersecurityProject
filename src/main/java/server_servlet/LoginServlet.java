@@ -13,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import util.CSRFToken;
 import util.Hash;
 import util.SessionManager;
 import util.Validator;
@@ -91,9 +92,13 @@ public class LoginServlet extends HttpServlet {
 			 */
 			System.out.println("Login succeeded!");
 
+			String csrfToken = CSRFToken.get();
 			SessionManager.setSessionUser(request.getSession(), user.getEmail());
+			SessionManager.setCSRFToken(request.getSession(), csrfToken);
+
 			request.setAttribute("email", user.getEmail());
 			request.setAttribute("content", "");
+			request.setAttribute("csrfToken", csrfToken);
 			request.getRequestDispatcher("home.jsp").forward(request, response);
 			
 		} catch (SQLException e) {
