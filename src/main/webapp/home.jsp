@@ -1,7 +1,7 @@
+<%@ page import="util.CSRFToken" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
 
 <!DOCTYPE html>
 <html>
@@ -218,8 +218,6 @@
 					formData.set("signature", signatureBase64);
 				}
 
-				console.log("hello")
-
 				const bodyBase64 = window.btoa(emailBody)
 				const encryptedBody = await window.crypto.subtle.encrypt(
 					{
@@ -228,8 +226,6 @@
 					publicKey,
 					str2ab(bodyBase64)
 				)
-
-				console.log("helooo")
 
 				// Encoding content and overwriting form data
 				const encryptedBodyBase64 = window.btoa(ab2str(encryptedBody))
@@ -271,6 +267,7 @@
 				${fn:escapeXml(email)}
 			</p>
 			<form class="navbar-controls" action="LogoutServlet" method="post">
+				<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 				<input type="submit" name="logout" value="Logout">
 			</form>
 	  	</div>
@@ -278,7 +275,7 @@
 	
 	<div class="grid-container">
 		<form class="btn-group" action="NavigationServlet" method="post">
-			<input type="hidden" name="email" value=<c:out value="${email}" escapeXml=" true"/>>
+			<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 			<input type="text" name="search"  placeholder="Search..." id="item">
 			<input type="submit" name="search"  value="Search">
 			<input type="submit" name="newMail" value="New Mail">

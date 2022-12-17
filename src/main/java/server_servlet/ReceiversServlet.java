@@ -1,20 +1,27 @@
 package server_servlet;
 
+import asymmetricEncryption.FromBytesToKeyConverter;
 import asymmetricEncryption.KeyGetter;
 import database.DBAPI;
+import database.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import util.SessionManager;
 import util.Validator;
 
 import java.io.IOException;
+import java.security.PublicKey;
+import java.sql.Connection;
 
 @WebServlet("/ReceiversServlet")
 public class ReceiversServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
+    private static Connection conn;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -24,6 +31,7 @@ public class ReceiversServlet extends HttpServlet {
     }
 
     public void init() throws ServletException {
+        conn = DBConnection.getConn();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
