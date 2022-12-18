@@ -64,13 +64,6 @@ The application consists of three components:
 
 6. Restart Eclipse
 
-#### Tomcat server setup
-1. Go to Window -> Preferences -> Server -> Runtime Environments -> Add... -> Apache -> Apache Tomcat v10.0 -> Thick 'Create new a local server' -> Next
-
-2. Click 'Download and install...', that should install the latest stable version (currently 10.0.13) -> Choose your favourite folder for Tomcat installation
-
-3. Since now you can see your installed web servers in the Eclipse 'Server' tab, if it is not displayed by default, you can enable it by going to Window -> Show view -> Server
-
 # Project setup
 
 #### Import the project from GitHub 
@@ -102,6 +95,13 @@ mvn clean install package
 
 3. Right click on the project -> Properties -> Deployment Assembly
 	- Add the `assets` folder to the `/` deploy path
+	
+#### Tomcat server setup
+1. Go to Window -> Preferences -> Server -> Runtime Environments -> Add... -> Apache -> Apache Tomcat v10.0 -> Thick 'Create new a local server' -> Next
+
+2. Click 'Download and install...', that should install the latest stable version (currently 10.0.13) -> Choose your favourite folder for Tomcat installation
+
+3. Since now you can see your installed web servers in the Eclipse 'Server' tab, if it is not displayed by default, you can enable it by going to Window -> Show view -> Server
 
 #### Database setup
 
