@@ -123,7 +123,7 @@ Now you are ready to run the Java web application! Send emails to your friends. 
 
 ## Security Considerations
 
-Following are some general considerations on known weaknesses of the application and some of a couple of ideas to
+Following are some general considerations on known weaknesses of the application and a couple of ideas to
 improve its security.
 
 #### Private Keys Storage
