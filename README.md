@@ -93,11 +93,14 @@ mvn clean install package
 ``` 
 > **_NOTE:_** If the project build path gives an error (if there is the exclamation mark on the project folder icon), righ click on the project -> go to Java Build Path -> remove the references to the missing libraries.
 
-#### Generate .env file
+#### .env file
 
-1. Create a .env file as described in the top of this document in the project directory
+1. Create an `.env` file in `./assets` with the properties listed at the top of this document
 
 > **_NOTE:_**  a ready .env.example file has been provided for convenience
+
+2. Right click on the project -> Properties -> Deployment Assembly
+	- Add the `assets` folder to the `/` Deploy path
 
 #### Database setup
 
