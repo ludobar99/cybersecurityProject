@@ -35,7 +35,6 @@ public class LogoutServlet extends HttpServlet {
 			response.sendRedirect("login.html");
 			return;
 		}
-		String user = SessionManager.getSessionUser(session);
 
 		// CSRF Check
 		String sessionCSRFToken = null;

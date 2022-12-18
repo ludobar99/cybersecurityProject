@@ -5,7 +5,6 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class CSRFToken {
-
     public static String get() throws NoSuchAlgorithmException {
         SecureRandom random = new SecureRandom();
 

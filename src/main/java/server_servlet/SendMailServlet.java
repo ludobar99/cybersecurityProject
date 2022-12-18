@@ -87,14 +87,14 @@ public class SendMailServlet extends HttpServlet {
 		try {
 			if (DBAPI.getAccount(receiver) == null) {
 				System.out.println("Receiver does not exist");
-				response.sendError(500, "Request receiver does not exist");
+				response.sendError(400, "Request receiver does not exist");
 				return;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		// Saving database in email (sending)
+		// Saving email in database (sending)
 		try {
 			byte[] bodyBytes = body.getBytes();
 			byte[] subjectBytes = subject.getBytes();

@@ -58,28 +58,12 @@ public class NavigationServlet extends HttpServlet {
 		try {
 			sessionCSRFToken = SessionManager.getCSRFToken(session);
 			String requestCSRFToken = request.getParameter("csrfToken");
-			System.out.println(sessionCSRFToken + " " + requestCSRFToken);
 			if (!sessionCSRFToken.equals(requestCSRFToken)) throw new Exception("CSRF Tokens do not match!");
 		} catch (Exception error) {
 			response.sendError(403, "CSRF Token error");
 			return;
 		}
-		
-		/*
-		 * validating user
-		 */
-		if (!Validator.validateEmail(user)) {
-			System.out.println("Invalid user");
-			request.getRequestDispatcher("login.html").forward(request, response);
-			return;
-		}
 
-		/*
-		 * sanitizing user
-		 */
-		user = StringEscapeUtils.escapeHtml4(user);
-					
-		
 		if (request.getParameter("newMail") != null)
 			request.setAttribute("content", getHtmlForNewMail(user, sessionCSRFToken));
 
@@ -129,11 +113,6 @@ public class NavigationServlet extends HttpServlet {
 				String timestamp = currentEmail.getTimestamp();
 				String sender = currentEmail.getSender();
 
-				/*
-				 * sanitizing subject
-				 */
-				subjectString = StringEscapeUtils.escapeHtml4(subjectString);
-				
 				String signatureString = null;
 				if (signature != null) {
 					signatureString = new String(signature);
@@ -167,14 +146,6 @@ public class NavigationServlet extends HttpServlet {
 	
 	
 	private String getHtmlForNewMail(String email, String sessionCSRFToken) {
-		/*
-		 * Validating email
-		 */
-		if (!Validator.validateEmail(email)) {
-			System.out.println("Invalid email");
-			return "";
-		}
-
 		return 
 				"<form id=\"submitForm\" class=\"form-resize\">\r\n"
 				+ "		<input type=\"hidden\" name=\"csrfToken\" value=\""+ sessionCSRFToken +"\">\r\n"
@@ -209,25 +180,10 @@ public class NavigationServlet extends HttpServlet {
 				String _emailReceiver = sentEmail.get(i).getReceiver();
 				String _timestamp = sentEmail.get(i).getTimestamp();
 				
-				/*
-				 * Validating receiver's email
-				 */
-				if (!Validator.validateEmail(_emailReceiver)) {
-					System.out.println("Invalid email");
-					return "";
-				}
-				
-				/*
-				 * Sanitizing 
-				 */
-				_emailReceiver = StringEscapeUtils.escapeHtml4(_emailReceiver);
-				_timestamp = StringEscapeUtils.escapeHtml4(_timestamp);
-				String _sanitizedSubject = StringEscapeUtils.escapeHtml4(new String(_subject));
-				
 				output.append("<div class='mail-sent'><span>");
 				output.append("TO:&emsp;" + _emailReceiver + "&emsp;&emsp;AT:&emsp;" + _timestamp);
 				output.append("</span>");
-				output.append("<br><b>" + _sanitizedSubject + "</b>\r\n");
+				output.append("<br><b>" + _subject + "</b>\r\n");
 				output.append("<br>" + _body);
 				output.append("</div>\r\n");
 			}
@@ -252,9 +208,7 @@ public class NavigationServlet extends HttpServlet {
 			item = StringEscapeUtils.escapeHtml4(item);
 			
 			output.append("<div>\r\n");
-			
 			output.append("<p>You searched for: "+ item +"</p>");
-			
 			output.append("</div>");
 			
 			return output.toString();
