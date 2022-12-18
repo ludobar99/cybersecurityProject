@@ -26,18 +26,17 @@ public class DBConnection {
 		 * 2. update your generateEnv file with the right path
 		 * 3. run the script (generateEnv.sh/generateEv.bat) in your teminal
 		 */
-		String currentDir = System.getProperty("user.dir");
-		File f = new File(currentDir + "/.env");
+		String currentDir = System.getProperty("catalina.base") + "/wtpwebapps/ExamProject/.env";
+		File f = new File(currentDir);
 
 		if(f.exists() && !f.isDirectory()) {
 			System.out.println(".env file found");
 		} else {
 			System.out.println(".env file not foun in " + currentDir);
-			System.out.println("Run generateEnv.sh/generateEnv.bat and make sure that the path in the script is: " + currentDir);
 		}
 
 		Dotenv dotenv = null;
-		dotenv = Dotenv.configure().load();
+		dotenv = Dotenv.configure().directory(currentDir).load();
 		try {
 			Class.forName(dotenv.get("DRIVER_CLASS"));
 
