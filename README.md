@@ -100,7 +100,7 @@ mvn clean install package
 > **_NOTE:_**  a ready .env.example file has been provided for convenience
 
 2. Right click on the project -> Properties -> Deployment Assembly
-	- Add the `assets` folder to the `/` Deploy path
+	- Add the `assets` folder to the `/` deploy path
 
 #### Database setup
 
