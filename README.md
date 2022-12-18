@@ -95,11 +95,12 @@ mvn clean install package
 
 #### .env file
 
-1. Create an `.env` file in `./assets` with the properties listed at the top of this document
+1. Create a new `assets` folder in the root directory
+2. Create an `.env` file in the new `assets` with the properties listed at the top of this document
 
 > **_NOTE:_**  a ready .env.example file has been provided for convenience
 
-2. Right click on the project -> Properties -> Deployment Assembly
+3. Right click on the project -> Properties -> Deployment Assembly
 	- Add the `assets` folder to the `/` deploy path
 
 #### Database setup
