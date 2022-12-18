@@ -91,6 +91,7 @@ The application consists of three components:
 ```shell
 mvn clean install package
 ``` 
+> **_NOTE:_** If the project build path gives an error (if there is the exclamation mark on the project folder icon), righ click on the project -> go to Java Build Path -> remove the references to the missing libraries.
 
 #### Generate .env file
 
