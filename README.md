@@ -7,7 +7,7 @@ Starting from an unsecure implementation, several mechanisms were applied to imp
 
 ## .env
 
-Reuqired environment variables and defaults
+Reuqired environment variables
 
 ```env
 ACCEPT_EULA=Y
