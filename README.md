@@ -1,5 +1,3 @@
-# README
-
 # Cybersecurity Project - 2021/2022
 
 The authors of this project are Massimo Marcon - 17110 - and Ludovica Barozzi - 16851.
